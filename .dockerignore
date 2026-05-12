@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!Dockerfile.localbuild
+!nodeport_tc.c
+!ubuntu-base-22.04-base-amd64.tar.gz
+!scripts/
+!scripts/**
+!manifests/
+!manifests/**

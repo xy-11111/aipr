@@ -33,15 +33,6 @@ run() {
     fi
 }
 
-u32_to_le_bytes() {
-    local value="$1"
-    printf '%02x %02x %02x %02x' \
-        $(( value & 0xff )) \
-        $(( (value >> 8) & 0xff )) \
-        $(( (value >> 16) & 0xff )) \
-        $(( (value >> 24) & 0xff ))
-}
-
 require_root() {
     if [[ "$DRY_RUN" == "1" ]]; then
         return
@@ -103,20 +94,8 @@ run find "$MAP_DIR" -mindepth 1 -maxdepth 1 -type f -delete
 run "$CLANG" -O2 -g -target bpf -D__TARGET_ARCH_x86 -I/usr/include/x86_64-linux-gnu "${EXTRA_BPF_CFLAGS[@]}" -c "$SRC" -o "$OBJ"
 run bpftool prog load "$OBJ" "$PROG_PIN" type classifier pinmaps "$MAP_DIR"
 
-outer_ifindex="$(cat "/sys/class/net/${OUTER_IFACE}/ifindex")"
 normalized_inner="${INNER_IFACES//,/ }"
 read -r -a inner_items <<< "$normalized_inner"
-inner_ifindex="0"
-tunnel_ifindex="0"
-if [[ "${#inner_items[@]}" -gt 0 && -e "/sys/class/net/${inner_items[0]}/ifindex" ]]; then
-    inner_ifindex="$(cat "/sys/class/net/${inner_items[0]}/ifindex")"
-fi
-if [[ "${#inner_items[@]}" -gt 1 && -e "/sys/class/net/${inner_items[1]}/ifindex" ]]; then
-    tunnel_ifindex="$(cat "/sys/class/net/${inner_items[1]}/ifindex")"
-fi
-run bpftool map update pinned "${MAP_DIR}/nodeport_config_map" \
-    key hex 00 00 00 00 \
-    value hex $(u32_to_le_bytes "$outer_ifindex") $(u32_to_le_bytes "$inner_ifindex") $(u32_to_le_bytes "$tunnel_ifindex") 00 00 00 00 any
 
 attach_ingress "$OUTER_IFACE"
 attach_egress "$OUTER_IFACE"
@@ -139,10 +118,7 @@ fi
 echo "program pinned at: $PROG_PIN"
 echo "maps pinned under: $MAP_DIR"
 echo "outer iface: $OUTER_IFACE ingress+egress"
-echo "outer ifindex: $outer_ifindex"
 echo "inner ingress ifaces: $INNER_IFACES"
-echo "inner ifindex: $inner_ifindex"
-echo "tunnel ifindex: $tunnel_ifindex"
 if [[ "$ATTACH_VETHS" == "1" ]]; then
     echo "veth ingress ifaces: ${veth_items[*]:-(none)}"
 else

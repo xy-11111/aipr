@@ -6,22 +6,39 @@ import argparse
 import json
 import os
 import pwd
+import queue
 import shlex
 import socket
 import subprocess
 import sys
+import threading
 import time
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from detect_nodeport_environment import DeliveryEnvironment, build_cluster_facts, detect_environment
+
+try:
+    from kubernetes import client as k8s_client
+    from kubernetes import config as k8s_config
+    from kubernetes import watch as k8s_watch
+    from kubernetes.client import ApiException
+except ImportError:
+    k8s_client = None
+    k8s_config = None
+    k8s_watch = None
+    ApiException = Exception
+
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_UPDATE_SCRIPT = SCRIPT_DIR / "update_nodeport_map.sh"
+DEFAULT_UPDATE_CONFIG_SCRIPT = SCRIPT_DIR / "update_nodeport_config_map.sh"
 DEFAULT_SERVICE_MAP_PIN = "/sys/fs/bpf/nodeport_tc/maps/nodeport_service_map"
 DEFAULT_BACKEND_MAP_PIN = "/sys/fs/bpf/nodeport_tc/maps/nodeport_backend_map"
 DEFAULT_RR_STATE_MAP_PIN = "/sys/fs/bpf/nodeport_tc/maps/nodeport_rr_state_map"
+DEFAULT_CONFIG_MAP_PIN = "/sys/fs/bpf/nodeport_tc/maps/nodeport_config_map"
 
 
 @dataclass(frozen=True)
@@ -109,6 +126,29 @@ def kubectl_command(kubectl: str, *args: str) -> list[str]:
 
 def kubectl_get_json(kubectl: str, resource: str) -> dict[str, Any]:
     return json.loads(run_read(kubectl_command(kubectl, "get", resource, "-A", "-o", "json")))
+
+
+def load_cluster_state(kubectl: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    return (
+        kubectl_get_json(kubectl, "nodes"),
+        kubectl_get_json(kubectl, "services"),
+        kubectl_get_json(kubectl, "endpointslices.discovery.k8s.io"),
+    )
+
+
+def load_kube_api_clients() -> tuple[Any, Any, Any]:
+    if not k8s_client or not k8s_config or not k8s_watch:
+        raise RuntimeError("watch mode requires the Python kubernetes client to be installed")
+
+    try:
+        k8s_config.load_incluster_config()
+    except Exception:
+        kubeconfig_path = resolve_kubeconfig_path()
+        if kubeconfig_path:
+            k8s_config.load_kube_config(config_file=kubeconfig_path)
+        else:
+            k8s_config.load_kube_config()
+    return k8s_client.CoreV1Api(), k8s_client.DiscoveryV1Api(), k8s_client.CustomObjectsApi()
 
 
 def detect_iface_ipv4(iface: str) -> str:
@@ -256,10 +296,17 @@ def collect_backends(
     return backends
 
 
-def load_desired_entries(args: argparse.Namespace, node_name: str) -> list[NodePortEntry]:
-    nodes = kubectl_get_json(args.kubectl, "nodes")
-    services = kubectl_get_json(args.kubectl, "services")
-    endpoint_slices = kubectl_get_json(args.kubectl, "endpointslices.discovery.k8s.io")
+def load_desired_entries(
+    args: argparse.Namespace,
+    node_name: str,
+    *,
+    nodes: dict[str, Any] | None = None,
+    services: dict[str, Any] | None = None,
+    endpoint_slices: dict[str, Any] | None = None,
+) -> list[NodePortEntry]:
+    nodes = nodes or kubectl_get_json(args.kubectl, "nodes")
+    services = services or kubectl_get_json(args.kubectl, "services")
+    endpoint_slices = endpoint_slices or kubectl_get_json(args.kubectl, "endpointslices.discovery.k8s.io")
     node_ips = node_internal_ips(nodes)
     node_ip = node_ips.get(node_name)
     if not node_ip:
@@ -329,6 +376,11 @@ def parse_dump_keys(output: str) -> list[list[str]]:
     return keys
 
 
+def iface_ifindex(iface: str) -> int:
+    output = run_read(["cat", f"/sys/class/net/{iface}/ifindex"])
+    return int(output.strip())
+
+
 def clear_map(map_pin: str, dry_run: bool) -> int:
     if dry_run:
         log(f"# dry-run: skipping clear for {map_pin}")
@@ -365,6 +417,31 @@ def update_command(
     )
 
 
+def config_update_command(args: argparse.Namespace, profile: DeliveryEnvironment) -> list[str]:
+    routing_mode = 1 if profile.routing_mode == "encap" else 0
+    remote_ifindex = iface_ifindex(profile.remote_delivery_iface) if profile.remote_delivery_iface else 0
+    return root_command(
+        [
+            "env",
+            f"CONFIG_MAP_PIN={args.config_map_pin}",
+            args.update_config_script,
+            str(iface_ifindex(profile.external_iface)),
+            str(iface_ifindex(profile.local_delivery_iface)),
+            str(remote_ifindex),
+            str(routing_mode),
+        ]
+    )
+
+
+def sync_delivery_config(args: argparse.Namespace, profile: DeliveryEnvironment) -> None:
+    log(
+        "updating delivery config: "
+        f"external={profile.external_iface} local={profile.local_delivery_iface} "
+        f"remote={profile.remote_delivery_iface or 'none'} mode={profile.routing_mode}"
+    )
+    run_write(config_update_command(args, profile), args.dry_run)
+
+
 def sync_entries(args: argparse.Namespace, entries: list[NodePortEntry]) -> None:
     svc_cleared = clear_map(args.service_map_pin, args.dry_run)
     backend_cleared = clear_map(args.backend_map_pin, args.dry_run)
@@ -379,6 +456,233 @@ def sync_entries(args: argparse.Namespace, entries: list[NodePortEntry]) -> None
             run_write(update_command(args, entry, backend, index), args.dry_run)
 
 
+def remote_backend_targets(entries: tuple[NodePortEntry, ...]) -> tuple[str, ...]:
+    targets: list[str] = []
+    seen: set[str] = set()
+    for entry in entries:
+        for backend in entry.backends:
+            if backend.node_ip == entry.node_ip:
+                continue
+            if backend.address in seen:
+                continue
+            seen.add(backend.address)
+            targets.append(backend.address)
+    return tuple(targets)
+
+
+def compute_desired_state(
+    args: argparse.Namespace,
+    node_name: str,
+) -> tuple[tuple[NodePortEntry, ...], DeliveryEnvironment, list[NodePortEntry]]:
+    nodes, services, endpoint_slices = load_cluster_state(args.kubectl)
+    entries = load_desired_entries(
+        args,
+        node_name,
+        nodes=nodes,
+        services=services,
+        endpoint_slices=endpoint_slices,
+    )
+    snapshot = tuple(entries)
+    cluster_facts = build_cluster_facts(nodes, node_name, remote_backend_targets(snapshot))
+    profile = detect_environment(
+        external_iface=args.external_iface,
+        local_delivery_iface=args.local_delivery_iface,
+        remote_delivery_iface=args.remote_delivery_iface,
+        routing_mode=args.routing_mode,
+        attach_iface=args.attach_iface,
+        inner_ifaces=args.inner_ifaces,
+        snat_iface=args.snat_iface,
+        node_ip=cluster_facts.node_ip,
+        local_pod_cidrs=cluster_facts.local_pod_cidrs,
+        remote_delivery_targets=cluster_facts.remote_delivery_targets,
+    )
+    return snapshot, profile, entries
+
+
+def reconcile(
+    args: argparse.Namespace,
+    node_name: str,
+    previous_snapshot: tuple[NodePortEntry, ...] | None,
+    previous_profile: DeliveryEnvironment | None,
+    *,
+    reason: str,
+) -> tuple[tuple[NodePortEntry, ...] | None, DeliveryEnvironment | None]:
+    snapshot, profile, entries = compute_desired_state(args, node_name)
+    if profile != previous_profile:
+        log(f"{reason}: syncing delivery config")
+        sync_delivery_config(args, profile)
+        previous_profile = profile
+    if snapshot != previous_snapshot:
+        log(f"{reason}: syncing NodePort map state")
+        sync_entries(args, entries)
+        previous_snapshot = snapshot
+        log("sync complete")
+    elif profile == previous_profile:
+        log(f"{reason}: state unchanged")
+    return previous_snapshot, previous_profile
+
+
+def object_metadata_fields(obj: Any) -> tuple[str, str, str]:
+    if isinstance(obj, dict):
+        metadata = obj.get("metadata") or {}
+        return (
+            metadata.get("resourceVersion", ""),
+            metadata.get("namespace", ""),
+            metadata.get("name", ""),
+        )
+
+    metadata = getattr(obj, "metadata", None)
+    return (
+        getattr(metadata, "resource_version", "") if metadata else "",
+        getattr(metadata, "namespace", "") if metadata else "",
+        getattr(metadata, "name", "") if metadata else "",
+    )
+
+
+def watcher_list_metadata_response(list_response: Any) -> tuple[str, int]:
+    if isinstance(list_response, dict):
+        metadata = list_response.get("metadata") or {}
+        return metadata.get("resourceVersion", ""), len(list_response.get("items") or [])
+
+    metadata = getattr(list_response, "metadata", None)
+    resource_version = getattr(metadata, "resource_version", "") if metadata else ""
+    count = len(getattr(list_response, "items", []) or [])
+    return resource_version, count
+
+
+def describe_watch_event(resource_name: str, event: dict[str, Any]) -> str:
+    event_type = event.get("type", "UNKNOWN")
+    obj = event.get("object")
+    _, namespace, name = object_metadata_fields(obj)
+    qualified = f"{namespace}/{name}" if namespace else name
+    return f"{resource_name}:{event_type}:{qualified or '-'}"
+
+
+def watch_resource(
+    *,
+    resource_name: str,
+    list_fn: Any,
+    event_queue: queue.Queue[str],
+    stop_event: threading.Event,
+) -> None:
+    resource_version = ""
+    while not stop_event.is_set():
+        try:
+            if not resource_version:
+                response = list_fn(_request_timeout=30)
+                resource_version, count = watcher_list_metadata_response(response)
+                log(f"watch {resource_name}: listed {count} objects rv={resource_version}")
+
+            watcher = k8s_watch.Watch()
+            for event in watcher.stream(
+                list_fn,
+                resource_version=resource_version,
+                timeout_seconds=300,
+                _request_timeout=330,
+            ):
+                if stop_event.is_set():
+                    watcher.stop()
+                    break
+                obj = event.get("object")
+                new_rv, _, _ = object_metadata_fields(obj)
+                if new_rv:
+                    resource_version = new_rv
+                event_queue.put(describe_watch_event(resource_name, event))
+            continue
+        except ApiException as error:
+            if getattr(error, "status", None) == 410:
+                log(f"watch {resource_name}: resourceVersion expired, relisting")
+                resource_version = ""
+                event_queue.put(f"{resource_name}:RESYNC:-")
+                time.sleep(1)
+                continue
+            log(f"watch {resource_name}: api error: {error}")
+        except Exception as error:
+            log(f"watch {resource_name}: error: {error}")
+        time.sleep(1)
+
+
+def run_watch_loop(args: argparse.Namespace, node_name: str) -> int:
+    core_api, discovery_api, custom_api = load_kube_api_clients()
+    previous_snapshot: tuple[NodePortEntry, ...] | None = None
+    previous_profile: DeliveryEnvironment | None = None
+    stop_event = threading.Event()
+    event_queue: queue.Queue[str] = queue.Queue()
+    threads = [
+        threading.Thread(
+            target=watch_resource,
+            kwargs={
+                "resource_name": "Service",
+                "list_fn": core_api.list_service_for_all_namespaces,
+                "event_queue": event_queue,
+                "stop_event": stop_event,
+            },
+            daemon=True,
+        ),
+        threading.Thread(
+            target=watch_resource,
+            kwargs={
+                "resource_name": "Node",
+                "list_fn": core_api.list_node,
+                "event_queue": event_queue,
+                "stop_event": stop_event,
+            },
+            daemon=True,
+        ),
+        threading.Thread(
+            target=watch_resource,
+            kwargs={
+                "resource_name": "EndpointSlice",
+                "list_fn": lambda **kwargs: custom_api.list_cluster_custom_object(
+                    group="discovery.k8s.io",
+                    version="v1",
+                    plural="endpointslices",
+                    **kwargs,
+                ),
+                "event_queue": event_queue,
+                "stop_event": stop_event,
+            },
+            daemon=True,
+        ),
+    ]
+
+    previous_snapshot, previous_profile = reconcile(
+        args,
+        node_name,
+        previous_snapshot,
+        previous_profile,
+        reason="initial sync",
+    )
+
+    for thread in threads:
+        thread.start()
+
+    try:
+        while True:
+            first_event = event_queue.get()
+            events = [first_event]
+            deadline = time.monotonic() + args.watch_debounce
+            while True:
+                timeout = deadline - time.monotonic()
+                if timeout <= 0:
+                    break
+                try:
+                    events.append(event_queue.get(timeout=timeout))
+                except queue.Empty:
+                    break
+            log(f"watch: received {len(events)} event(s); reconciling")
+            previous_snapshot, previous_profile = reconcile(
+                args,
+                node_name,
+                previous_snapshot,
+                previous_profile,
+                reason="watch reconcile",
+            )
+    except KeyboardInterrupt:
+        stop_event.set()
+        return 0
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Synchronize NodePort/TCP Services into BPF maps")
     parser.add_argument("--kubectl", default="kubectl")
@@ -386,11 +690,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--service", help="optional namespace/name selector")
     parser.add_argument("--snat-ip", help="SNAT source IP; defaults to --snat-iface IPv4")
     parser.add_argument("--snat-iface", default="cni0", help="interface used to detect SNAT source IP")
+    parser.add_argument("--external-iface")
+    parser.add_argument("--local-delivery-iface")
+    parser.add_argument("--remote-delivery-iface")
+    parser.add_argument("--routing-mode", choices=("native", "encap"))
+    parser.add_argument("--attach-iface")
+    parser.add_argument("--inner-ifaces")
     parser.add_argument("--update-script", default=str(DEFAULT_UPDATE_SCRIPT))
+    parser.add_argument("--update-config-script", default=str(DEFAULT_UPDATE_CONFIG_SCRIPT))
     parser.add_argument("--service-map-pin", default=DEFAULT_SERVICE_MAP_PIN)
     parser.add_argument("--backend-map-pin", default=DEFAULT_BACKEND_MAP_PIN)
     parser.add_argument("--rr-state-map-pin", default=DEFAULT_RR_STATE_MAP_PIN)
+    parser.add_argument("--config-map-pin", default=DEFAULT_CONFIG_MAP_PIN)
+    parser.add_argument("--sync-mode", choices=("oneshot", "poll", "watch"), default="oneshot")
     parser.add_argument("--poll-interval", type=float, default=0.0)
+    parser.add_argument("--watch-debounce", type=float, default=0.2)
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -401,25 +715,27 @@ def main() -> int:
     log(f"node name: {node_name}")
     if args.service:
         log(f"service selector: {args.service}")
+    if args.sync_mode == "watch":
+        return run_watch_loop(args, node_name)
 
     previous_snapshot: tuple[NodePortEntry, ...] | None = None
+    previous_profile: DeliveryEnvironment | None = None
     iteration = 0
 
     while True:
         iteration += 1
-        entries = load_desired_entries(args, node_name)
-        snapshot = tuple(entries)
-        if snapshot != previous_snapshot:
-            log(f"iteration {iteration}: syncing NodePort map state")
-            sync_entries(args, entries)
-            previous_snapshot = snapshot
-            log("sync complete")
-        else:
-            log(f"iteration {iteration}: state unchanged")
+        previous_snapshot, previous_profile = reconcile(
+            args,
+            node_name,
+            previous_snapshot,
+            previous_profile,
+            reason=f"iteration {iteration}",
+        )
 
-        if args.poll_interval <= 0:
+        if args.sync_mode != "poll":
             return 0
-
+        if args.poll_interval <= 0:
+            raise RuntimeError("poll mode requires --poll-interval > 0")
         time.sleep(args.poll_interval)
 
 

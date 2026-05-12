@@ -2,6 +2,8 @@
 !Dockerfile
 !Dockerfile.localbuild
 !nodeport_tc.c
+!bin/
+!bin/**
 !ubuntu-base-22.04-base-amd64.tar.gz
 !scripts/
 !scripts/**

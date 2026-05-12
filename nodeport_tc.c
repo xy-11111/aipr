@@ -103,10 +103,10 @@ struct nodeport_fwd_ct_value {
 };
 
 struct nodeport_config {
-    __u32 outer_ifindex;
-    __u32 inner_ifindex;
-    __u32 tunnel_ifindex;
-    __u32 flags;
+    __u32 external_ifindex;
+    __u32 local_delivery_ifindex;
+    __u32 remote_delivery_ifindex;
+    __u32 routing_mode;
 };
 
 struct {
@@ -417,9 +417,9 @@ static __always_inline int handle_request(
     snat_port = allocate_snat_port();
     if (config) {
         if (backend.node_ip == service.address)
-            egress_ifindex = config->inner_ifindex;
+            egress_ifindex = config->local_delivery_ifindex;
         else
-            egress_ifindex = config->tunnel_ifindex;
+            egress_ifindex = config->remote_delivery_ifindex;
     }
 
     ct_key.backend_ip = backend.address;
@@ -489,8 +489,8 @@ static __always_inline int handle_response(
         bump_stat(STAT_RESPONSE_REWRITE);
 
     config = bpf_map_lookup_elem(&nodeport_config_map, &config_key);
-    if (config && config->outer_ifindex > 0) {
-        bpf_redirect_neigh(config->outer_ifindex, 0, 0, 0);
+    if (config && config->external_ifindex > 0) {
+        bpf_redirect_neigh(config->external_ifindex, 0, 0, 0);
         return TC_ACT_REDIRECT;
     }
 

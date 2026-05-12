@@ -40,15 +40,19 @@ metadata:
   name: ebpf-nodeport-agent-config
   namespace: ebpf-nodeport-system
 data:
-  NODEPORT_ATTACH_IFACE: "enp1s0"
-  NODEPORT_INNER_IFACES: "cni0,flannel.1"
+  NODEPORT_ATTACH_IFACE: ""
+  NODEPORT_INNER_IFACES: ""
+  NODEPORT_EXTERNAL_IFACE: ""
+  NODEPORT_LOCAL_DELIVERY_IFACE: ""
+  NODEPORT_REMOTE_DELIVERY_IFACE: ""
+  NODEPORT_ROUTING_MODE: ""
   NODEPORT_ATTACH_VETHS: "0"
   NODEPORT_VETH_GLOB: "veth*"
   NODEPORT_SET_ACCEPT_LOCAL: "1"
   NODEPORT_SNAT_IFACE: "cni0"
   NODEPORT_SNAT_IP: ""
-  NODEPORT_SERVICE_SELECTOR: "ebpf-nodeport-test/nodeport-echo"
-  NODEPORT_SYNC_MODE: "poll"
+  NODEPORT_SERVICE_SELECTOR: ""
+  NODEPORT_SYNC_MODE: "watch"
   NODEPORT_SYNC_POLL_INTERVAL: "5"
   NODEPORT_EXTRA_ARGS: ""
   BPF_CFLAGS: ""
@@ -81,8 +85,7 @@ spec:
           image: docker.io/library/ebpf-nodeport-agent:snat-v1
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
-            - /workspace/scripts/run_nodeport_agent.sh
+            - /workspace/bin/nodeport-agent
           envFrom:
             - configMapRef:
                 name: ebpf-nodeport-agent-config

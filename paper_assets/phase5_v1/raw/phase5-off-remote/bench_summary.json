@@ -1,0 +1,14 @@
+{
+  "concurrency": 16,
+  "duration_seconds": 60.0,
+  "measurement_end_unix_ms": 1779547286773,
+  "measurement_start_unix_ms": 1779547226773,
+  "p50_latency_ms": 7.034,
+  "p99_latency_ms": 26.211,
+  "success_rate": 0.994232,
+  "successful_requests": 48607,
+  "throughput_rps": 814.816667,
+  "total_requests": 48889,
+  "url": "http://192.168.1.202:30080/",
+  "warmup_seconds": 10.0
+}

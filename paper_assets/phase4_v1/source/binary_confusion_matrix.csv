@@ -1,0 +1,3 @@
+true_label,pred:normal,pred:anomaly
+true:normal,325,32
+true:anomaly,35,117

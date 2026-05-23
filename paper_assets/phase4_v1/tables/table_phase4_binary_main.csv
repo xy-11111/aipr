@@ -1,0 +1,5 @@
+family,model_name,val_anomaly_f1,val_pr_auc,val_roc_auc,test_anomaly_f1,test_pr_auc,test_roc_auc,test_balanced_accuracy
+DummyClassifier,dummy_prior,0.0,0.2775,0.5,nan,nan,nan,nan
+RuleBasedBinaryDetector,rule_based,0.6105263157894737,0.5762006741214661,0.793618878393965,nan,nan,nan,nan
+LogisticRegression,logreg_c1.0_cwnone,0.7085201793721974,0.8291185492084108,0.9048131176158857,nan,nan,nan,nan
+RandomForestClassifier,rf_n100_d16_leaf5_cwnone,0.7348837209302326,0.8277006563935629,0.8795473674366407,nan,nan,nan,nan

@@ -1,0 +1,4 @@
+family,model_name,val_macro_f1,val_balanced_accuracy,test_macro_f1,test_balanced_accuracy,test_accuracy
+DummyClassifier,dummy_prior,0.06904761904761905,0.16666666666666666,nan,nan,nan
+LogisticRegression,logreg_c10.0_cwnone,0.297017797017797,0.3268199233716475,nan,nan,nan
+RandomForestClassifier,rf_n100_d16_leaf5_cwbalanced,0.37219458264234384,0.3744389709906952,nan,nan,nan

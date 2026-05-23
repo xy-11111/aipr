@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Phase 4 binary anomaly detection baseline results.}
+\label{tab:phase4_binary_main}
+\begin{tabular}{lrrrrrrrr}
+\hline
+family & model\_name & val\_anomaly\_f1 & val\_pr\_auc & val\_roc\_auc & test\_anomaly\_f1 & test\_pr\_auc & test\_roc\_auc & test\_balanced\_accuracy \\
+\hline
+DummyClassifier & dummy\_prior & 0.0000 & 0.2775 & 0.5000 & nan & nan & nan & nan \\
+RuleBasedBinaryDetector & rule\_based & 0.6105 & 0.5762 & 0.7936 & nan & nan & nan & nan \\
+LogisticRegression & logreg\_c1.0\_cwnone & 0.7085 & 0.8291 & 0.9048 & nan & nan & nan & nan \\
+RandomForestClassifier & rf\_n100\_d16\_leaf5\_cwnone & 0.7349 & 0.8277 & 0.8795 & nan & nan & nan & nan \\
+\hline
+\end{tabular}
+\end{table}

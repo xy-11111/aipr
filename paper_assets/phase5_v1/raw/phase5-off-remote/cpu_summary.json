@@ -1,0 +1,7 @@
+{
+  "wall_duration_ms": 70362,
+  "worker1_node_cpu_pct": 20.374,
+  "worker2_node_cpu_pct": 32.866,
+  "worker1_agent_cpu_pct": 162.088,
+  "worker2_agent_cpu_pct": 262.798
+}

@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Phase 5 minimum 2x2 overhead matrix.}
+\label{tab:phase5_overhead_matrix}
+\begin{tabular}{lrrrrrrrrrr}
+\hline
+scenario & telemetry & topology & throughput\_rps & p50\_latency\_ms & p99\_latency\_ms & success\_rate & worker1\_node\_cpu\_pct & worker2\_node\_cpu\_pct & worker1\_agent\_cpu\_pct & worker2\_agent\_cpu\_pct \\
+\hline
+phase5-off-local & off & local & 8.000 & 0.000 & 0.000 & 0.000 & 19.932 & 19.329 & 159.028 & 154.772 \\
+phase5-on-local & on & local & 9.550 & 2.910 & 1027.928 & 0.162 & 21.316 & 19.163 & 170.349 & 154.321 \\
+phase5-off-remote & off & remote & 814.817 & 7.034 & 26.211 & 0.994 & 20.374 & 32.866 & 162.088 & 262.798 \\
+phase5-on-remote & on & remote & 764.183 & 6.492 & 23.756 & 0.993 & 22.126 & 32.895 & 176.561 & 262.554 \\
+\hline
+\end{tabular}
+\end{table}

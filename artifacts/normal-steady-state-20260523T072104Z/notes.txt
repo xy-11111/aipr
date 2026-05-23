@@ -1,0 +1,9 @@
+experiment_id=normal-steady-state-20260523T072104Z
+created_at_utc=20260523T072128Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+start_ms=1779520891037
+traffic_pid=2735605
+end_ms=1779520922831

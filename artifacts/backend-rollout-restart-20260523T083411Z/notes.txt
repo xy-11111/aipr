@@ -1,0 +1,16 @@
+experiment_id=backend-rollout-restart-20260523T083411Z
+created_at_utc=20260523T083411Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+collector_started_k8s-worker1=1
+collector_log_k8s-worker1=/var/log/ebpf-nodeport/telemetry-runtime/backend-rollout-restart-20260523T083411Z/k8s-worker1/collector.log
+collector_started_k8s-worker2=1
+collector_log_k8s-worker2=/var/log/ebpf-nodeport/telemetry-runtime/backend-rollout-restart-20260523T083411Z/k8s-worker2/collector.log
+traffic_pid=2907451
+rollout_restart_start_ms=1779525264238
+rollout_restart_end_ms=1779525334438
+experiment_end_ms=1779525340814
+agent_pod_k8s-worker1=ebpf-nodeport-agent-79bjl
+agent_pod_k8s-worker2=ebpf-nodeport-agent-fdqt5

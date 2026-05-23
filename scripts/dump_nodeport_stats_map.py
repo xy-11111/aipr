@@ -22,6 +22,13 @@ STAT_NAMES = [
     "ct_lookup_miss",
     "response_rewrite",
     "same_node_skip",
+    "fwd_ct_hit",
+    "new_conn",
+    "map_miss",
+    "rewrite_fail",
+    "redirect_ok",
+    "redirect_fail",
+    "fallback_pass",
 ]
 
 

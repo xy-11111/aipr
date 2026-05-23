@@ -3,7 +3,6 @@ FROM scratch
 ADD ubuntu-base-22.04-base-amd64.tar.gz /
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
     bash \
@@ -17,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     linux-tools-5.15.0-174-generic \
     linux-tools-common \
     netcat-openbsd \
-    python3 \
     strace \
     sudo \
     util-linux \

@@ -1,0 +1,12 @@
+{
+  "experiment_id": "path-degradation-netem-20260523T114400Z",
+  "scenario": "path_degradation_netem",
+  "target_namespace": "ebpf-nodeport-test",
+  "target_service": "nodeport-echo",
+  "target_deployment": "nodeport-echo",
+  "target_node_name": "k8s-worker1",
+  "node_ip": "192.168.1.202",
+  "node_port": 30080,
+  "duration_seconds": 30,
+  "recovery_tail_ms": 3000
+}

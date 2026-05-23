@@ -1,0 +1,72 @@
+{
+  "artifacts_dir": "/home/ubuntu/wjy/ebpf_nodeport/artifacts",
+  "built_at_utc": "2026-05-23T11:56:33Z",
+  "dataset_field_count": 57,
+  "dataset_version": "phase3_v1",
+  "excluded_experiments": [
+    "agent-restart-20260523T083558Z",
+    "backend-rollout-restart-20260522T155326Z",
+    "normal-steady-state-20260522T154715Z",
+    "normal-steady-state-20260522T155112Z"
+  ],
+  "experiment_count": 20,
+  "generated_at_utc": "2026-05-23T11:57:06Z",
+  "included_experiments": [
+    "normal-steady-state-20260523T072104Z",
+    "backend-rollout-restart-20260523T072229Z",
+    "normal-steady-state-20260523T083153Z",
+    "backend-rollout-restart-20260523T083411Z",
+    "agent-restart-20260523T083729Z",
+    "map-rebuild-20260523T083956Z",
+    "path-degradation-netem-20260523T084038Z",
+    "conntrack-pressure-20260523T084229Z",
+    "service-delete-recreate-20260523T084325Z",
+    "endpointslice-churn-20260523T084408Z",
+    "traffic-burst-20260523T084558Z",
+    "agent-restart-20260523T113700Z",
+    "conntrack-pressure-20260523T113900Z",
+    "conntrack-pressure-20260523T114000Z",
+    "traffic-burst-20260523T114100Z",
+    "traffic-burst-20260523T114200Z",
+    "path-degradation-netem-20260523T114300Z",
+    "path-degradation-netem-20260523T114400Z",
+    "service-delete-recreate-20260523T114500Z",
+    "service-delete-recreate-20260523T114600Z"
+  ],
+  "label_distribution": {
+    "backend_churn": 19,
+    "conntrack_pressure": 107,
+    "control_plane_recovery": 22,
+    "load_surge": 108,
+    "normal": 1057,
+    "path_degradation": 107,
+    "service_reconcile": 30
+  },
+  "node_count": 2,
+  "output_dir": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1",
+  "quality_error_count": 0,
+  "quality_markdown": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1/quality_report.md",
+  "quality_warning_count": 0,
+  "raw_index_csv": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1/raw_index.csv",
+  "row_count": 1450,
+  "scenario_distribution": {
+    "agent_restart": 69,
+    "backend_rollout_restart": 364,
+    "conntrack_pressure": 175,
+    "endpointslice_churn": 177,
+    "map_rebuild": 31,
+    "normal_steady_state": 156,
+    "path_degradation_netem": 183,
+    "service_delete_recreate": 117,
+    "traffic_burst": 178
+  },
+  "selection_file": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1/experiment_selection.json",
+  "split_distribution": {
+    "test": 509,
+    "train": 541,
+    "val": 400
+  },
+  "summary_markdown": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1/dataset_summary.md",
+  "telemetry_field_count": 49,
+  "windows_all_csv": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1/windows_all.csv"
+}

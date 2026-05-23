@@ -1,0 +1,17 @@
+experiment_id=path-degradation-netem-20260523T114400Z
+created_at_utc=20260523T115330Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+netem_iface=flannel.1
+collector_started_k8s-worker1=1
+collector_log_k8s-worker1=/var/log/ebpf-nodeport/telemetry-runtime/path-degradation-netem-20260523T114400Z/k8s-worker1/collector.log
+collector_started_k8s-worker2=1
+collector_log_k8s-worker2=/var/log/ebpf-nodeport/telemetry-runtime/path-degradation-netem-20260523T114400Z/k8s-worker2/collector.log
+traffic_pid=3274988
+path_degradation_start_ms=1779537224828
+path_degradation_end_ms=1779537242828
+experiment_end_ms=1779537252007
+agent_pod_k8s-worker1=ebpf-nodeport-agent-wwbft
+agent_pod_k8s-worker2=ebpf-nodeport-agent-hkfn7

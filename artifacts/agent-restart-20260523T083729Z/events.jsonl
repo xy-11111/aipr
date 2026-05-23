@@ -1,0 +1,1 @@
+{"ts_start_unix_ms":1779525463396,"ts_end_unix_ms":1779525468163,"label":"control_plane_recovery","scope":"service","target":"ebpf-nodeport-test/nodeport-echo","recovery_tail_ms":5000}

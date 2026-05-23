@@ -1,0 +1,122 @@
+2026/05/23 11:48:22 resolved delivery profile: external=enp1s0 local=cni0 remote=flannel.1 mode=encap
+2026/05/23 11:48:22 pre-cleaning existing NodePort eBPF state
+2026/05/23 11:48:22 + tc filter del dev enp1s0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 11:48:22 + tc filter del dev enp1s0 egress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 11:48:22 + tc filter del dev cni0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 11:48:22 + tc filter del dev flannel.1 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 11:48:22 cleaned nodeport tc state under: /sys/fs/bpf/nodeport_tc
+2026/05/23 11:48:22 attaching NodePort tc program on outer=enp1s0 inner=cni0,flannel.1 attach_veths=false
+2026/05/23 11:48:22 + mkdir -p /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 11:48:22 + rm -f /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 + clang -O2 -g -target bpf -D__TARGET_ARCH_x86 -I/usr/include/x86_64-linux-gnu -c /workspace/nodeport_tc.c -o /tmp/nodeport_tc.o
+2026/05/23 11:48:22 + bpftool prog load /tmp/nodeport_tc.o /sys/fs/bpf/nodeport_tc/prog type classifier pinmaps /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 11:48:22 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 11:48:22 + tc filter replace dev enp1s0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 11:48:22 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 11:48:22 + tc filter replace dev enp1s0 egress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 11:48:22 + tc qdisc replace dev cni0 clsact
+2026/05/23 11:48:22 + tc filter replace dev cni0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 + echo 1 > /proc/sys/net/ipv4/conf/cni0/accept_local
+2026/05/23 11:48:22 + tc qdisc replace dev flannel.1 clsact
+2026/05/23 11:48:22 + tc filter replace dev flannel.1 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 + echo 1 > /proc/sys/net/ipv4/conf/flannel.1/accept_local
+2026/05/23 11:48:22 program pinned at: /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 11:48:22 maps pinned under: /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 11:48:22 outer iface: enp1s0 ingress+egress
+2026/05/23 11:48:22 inner ingress ifaces: cni0,flannel.1
+2026/05/23 11:48:22 veth ingress ifaces: disabled
+2026/05/23 11:48:22 starting NodePort syncer with mode=watch
+2026/05/23 11:48:22 sync mode=watch
+2026/05/23 11:48:22 node name: k8s-worker1
+2026/05/23 11:48:22 initial sync: syncing delivery config
+2026/05/23 11:48:22 updating delivery config: external=2 local=5 remote=4 mode=1
+2026/05/23 11:48:22 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:48:22 initial sync: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:48:23 watch: received 20 event(s); reconciling
+2026/05/23 11:48:23 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:49:37 watch: received 1 event(s); reconciling
+2026/05/23 11:49:37 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:49:37 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:49:37 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:49:42 watch: received 1 event(s); reconciling
+2026/05/23 11:49:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:49:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:49:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:49:45 watch: received 1 event(s); reconciling
+2026/05/23 11:49:45 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:49:47 watch: received 1 event(s); reconciling
+2026/05/23 11:49:47 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:50:27 watch: received 1 event(s); reconciling
+2026/05/23 11:50:27 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:50:27 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:50:27 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:50:42 watch: received 1 event(s); reconciling
+2026/05/23 11:50:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:50:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:50:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:05 watch: received 1 event(s); reconciling
+2026/05/23 11:51:05 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:51:05 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:51:05 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:06 watch: received 1 event(s); reconciling
+2026/05/23 11:51:06 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:51:06 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:51:06 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:27 watch: received 1 event(s); reconciling
+2026/05/23 11:51:27 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:51:27 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:51:27 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:42 watch: received 1 event(s); reconciling
+2026/05/23 11:51:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:51:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:51:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:05 watch: received 1 event(s); reconciling
+2026/05/23 11:52:05 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:05 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:52:05 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:06 watch: received 1 event(s); reconciling
+2026/05/23 11:52:06 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:06 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:52:06 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:17 watch: received 1 event(s); reconciling
+2026/05/23 11:52:17 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:17 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:52:17 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:32 watch: received 1 event(s); reconciling
+2026/05/23 11:52:32 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:32 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:52:32 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:35 watch: received 1 event(s); reconciling
+2026/05/23 11:52:35 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:52:47 watch: received 1 event(s); reconciling
+2026/05/23 11:52:47 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:47 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:52:47 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:52 watch: received 1 event(s); reconciling
+2026/05/23 11:52:52 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:52 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:52:52 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:55 watch: received 1 event(s); reconciling
+2026/05/23 11:52:55 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:55 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:52:55 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:56 watch: received 1 event(s); reconciling
+2026/05/23 11:52:56 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:52:56 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 11:52:56 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:53:01 watch: received 1 event(s); reconciling
+2026/05/23 11:53:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:53:07 watch: received 1 event(s); reconciling
+2026/05/23 11:53:07 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 11:53:07 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 11:53:07 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0

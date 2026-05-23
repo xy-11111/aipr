@@ -1,0 +1,16 @@
+experiment_id=service-delete-recreate-20260523T084325Z
+created_at_utc=20260523T084325Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+collector_started_k8s-worker1=1
+collector_log_k8s-worker1=/var/log/ebpf-nodeport/telemetry-runtime/service-delete-recreate-20260523T084325Z/k8s-worker1/collector.log
+collector_started_k8s-worker2=1
+collector_log_k8s-worker2=/var/log/ebpf-nodeport/telemetry-runtime/service-delete-recreate-20260523T084325Z/k8s-worker2/collector.log
+traffic_pid=2938738
+service_delete_start_ms=1779525818914
+service_recreate_end_ms=1779525822073
+experiment_end_ms=1779525829478
+agent_pod_k8s-worker1=ebpf-nodeport-agent-79bjl
+agent_pod_k8s-worker2=ebpf-nodeport-agent-hkfn7

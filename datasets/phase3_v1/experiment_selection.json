@@ -1,0 +1,30 @@
+{
+  "included_experiments": [
+    "normal-steady-state-20260523T072104Z",
+    "backend-rollout-restart-20260523T072229Z",
+    "normal-steady-state-20260523T083153Z",
+    "backend-rollout-restart-20260523T083411Z",
+    "agent-restart-20260523T083729Z",
+    "map-rebuild-20260523T083956Z",
+    "path-degradation-netem-20260523T084038Z",
+    "conntrack-pressure-20260523T084229Z",
+    "service-delete-recreate-20260523T084325Z",
+    "endpointslice-churn-20260523T084408Z",
+    "traffic-burst-20260523T084558Z",
+    "agent-restart-20260523T113700Z",
+    "conntrack-pressure-20260523T113900Z",
+    "conntrack-pressure-20260523T114000Z",
+    "traffic-burst-20260523T114100Z",
+    "traffic-burst-20260523T114200Z",
+    "path-degradation-netem-20260523T114300Z",
+    "path-degradation-netem-20260523T114400Z",
+    "service-delete-recreate-20260523T114500Z",
+    "service-delete-recreate-20260523T114600Z"
+  ],
+  "excluded_experiments": [
+    "agent-restart-20260523T083558Z",
+    "normal-steady-state-20260522T154715Z",
+    "normal-steady-state-20260522T155112Z",
+    "backend-rollout-restart-20260522T155326Z"
+  ]
+}

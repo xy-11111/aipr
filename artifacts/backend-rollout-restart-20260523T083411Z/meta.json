@@ -1,0 +1,12 @@
+{
+  "experiment_id": "backend-rollout-restart-20260523T083411Z",
+  "scenario": "backend_rollout_restart",
+  "target_namespace": "ebpf-nodeport-test",
+  "target_service": "nodeport-echo",
+  "target_deployment": "nodeport-echo",
+  "target_node_name": "k8s-worker1",
+  "node_ip": "192.168.1.202",
+  "node_port": 30080,
+  "duration_seconds": 30,
+  "recovery_tail_ms": 3000
+}

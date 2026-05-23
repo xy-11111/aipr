@@ -1,0 +1,918 @@
+{
+  "best_model": "rf_n100_dnone_leaf5_cwnone",
+  "candidates": {
+    "dummy_prior": {
+      "config": {
+        "strategy": "prior"
+      },
+      "family": "DummyClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7225,
+        "anomaly_f1": 0.0,
+        "anomaly_precision": 0.0,
+        "anomaly_recall": 0.0,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.5,
+        "normal_f1": 0.8388969521044993,
+        "normal_precision": 0.7225,
+        "normal_recall": 1.0,
+        "normal_support": 289,
+        "pr_auc": 0.2775,
+        "prediction_distribution": {
+          "anomaly": 0,
+          "normal": 400
+        },
+        "roc_auc": 0.5
+      }
+    },
+    "logreg_c0.1_cwbalanced": {
+      "config": {
+        "C": 0.1,
+        "class_weight": "balanced"
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7175,
+        "anomaly_f1": 0.6523076923076923,
+        "anomaly_precision": 0.4953271028037383,
+        "anomaly_recall": 0.954954954954955,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7906262664048131,
+        "normal_f1": 0.7621052631578947,
+        "normal_precision": 0.9731182795698925,
+        "normal_recall": 0.6262975778546713,
+        "normal_support": 289,
+        "pr_auc": 0.8214080311281167,
+        "prediction_distribution": {
+          "anomaly": 214,
+          "normal": 186
+        },
+        "roc_auc": 0.8959443872938683
+      }
+    },
+    "logreg_c0.1_cwnone": {
+      "config": {
+        "C": 0.1,
+        "class_weight": null
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.845,
+        "anomaly_f1": 0.7047619047619048,
+        "anomaly_precision": 0.7474747474747475,
+        "anomaly_recall": 0.6666666666666666,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.790080738177624,
+        "normal_f1": 0.8949152542372881,
+        "normal_precision": 0.8770764119601329,
+        "normal_recall": 0.9134948096885813,
+        "normal_support": 289,
+        "pr_auc": 0.8243882277419644,
+        "prediction_distribution": {
+          "anomaly": 99,
+          "normal": 301
+        },
+        "roc_auc": 0.8973471741637832
+      }
+    },
+    "logreg_c1.0_cwbalanced": {
+      "config": {
+        "C": 1.0,
+        "class_weight": "balanced"
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7175,
+        "anomaly_f1": 0.6479750778816199,
+        "anomaly_precision": 0.49523809523809526,
+        "anomaly_recall": 0.9369369369369369,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7850774650082608,
+        "normal_f1": 0.7640918580375783,
+        "normal_precision": 0.9631578947368421,
+        "normal_recall": 0.6332179930795848,
+        "normal_support": 289,
+        "pr_auc": 0.824819946474854,
+        "prediction_distribution": {
+          "anomaly": 210,
+          "normal": 190
+        },
+        "roc_auc": 0.9015243617319743
+      }
+    },
+    "logreg_c1.0_cwnone": {
+      "config": {
+        "C": 1.0,
+        "class_weight": null
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.8375,
+        "anomaly_f1": 0.7085201793721974,
+        "anomaly_precision": 0.7053571428571429,
+        "anomaly_recall": 0.7117117117117117,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7987624302503196,
+        "normal_f1": 0.8873483535528596,
+        "normal_precision": 0.8888888888888888,
+        "normal_recall": 0.8858131487889274,
+        "normal_support": 289,
+        "pr_auc": 0.8291185492084108,
+        "prediction_distribution": {
+          "anomaly": 112,
+          "normal": 288
+        },
+        "roc_auc": 0.9048131176158857
+      }
+    },
+    "logreg_c10.0_cwbalanced": {
+      "config": {
+        "C": 10.0,
+        "class_weight": "balanced"
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.72,
+        "anomaly_f1": 0.6477987421383647,
+        "anomaly_precision": 0.4975845410628019,
+        "anomaly_recall": 0.9279279279279279,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7840331681162132,
+        "normal_f1": 0.7676348547717843,
+        "normal_precision": 0.9585492227979274,
+        "normal_recall": 0.6401384083044983,
+        "normal_support": 289,
+        "pr_auc": 0.82691591829363,
+        "prediction_distribution": {
+          "anomaly": 207,
+          "normal": 193
+        },
+        "roc_auc": 0.8975965584962126
+      }
+    },
+    "logreg_c10.0_cwnone": {
+      "config": {
+        "C": 10.0,
+        "class_weight": null
+      },
+      "family": "LogisticRegression",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.805,
+        "anomaly_f1": 0.6666666666666666,
+        "anomaly_precision": 0.6341463414634146,
+        "anomaly_recall": 0.7027027027027027,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7734966800710745,
+        "normal_f1": 0.8621908127208481,
+        "normal_precision": 0.8808664259927798,
+        "normal_recall": 0.8442906574394463,
+        "normal_support": 289,
+        "pr_auc": 0.8294841771508029,
+        "prediction_distribution": {
+          "anomaly": 123,
+          "normal": 277
+        },
+        "roc_auc": 0.9021478225630475
+      }
+    },
+    "rf_n100_d16_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 16,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7525,
+        "anomaly_f1": 0.6177606177606177,
+        "anomaly_precision": 0.5405405405405406,
+        "anomaly_recall": 0.7207207207207207,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7427133015368309,
+        "normal_f1": 0.8170055452865065,
+        "normal_precision": 0.876984126984127,
+        "normal_recall": 0.7647058823529411,
+        "normal_support": 289,
+        "pr_auc": 0.7800516706072026,
+        "prediction_distribution": {
+          "anomaly": 148,
+          "normal": 252
+        },
+        "roc_auc": 0.8419370928021448
+      }
+    },
+    "rf_n100_d16_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 16,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7725,
+        "anomaly_f1": 0.6459143968871596,
+        "anomaly_precision": 0.5684931506849316,
+        "anomaly_recall": 0.7477477477477478,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7648773340814863,
+        "normal_f1": 0.8324125230202578,
+        "normal_precision": 0.889763779527559,
+        "normal_recall": 0.7820069204152249,
+        "normal_support": 289,
+        "pr_auc": 0.7952166637805845,
+        "prediction_distribution": {
+          "anomaly": 146,
+          "normal": 254
+        },
+        "roc_auc": 0.8494497958165779
+      }
+    },
+    "rf_n100_d16_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.69,
+        "anomaly_f1": 0.6149068322981367,
+        "anomaly_precision": 0.46919431279620855,
+        "anomaly_recall": 0.8918918918918919,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7521743196483681,
+        "normal_f1": 0.7405857740585774,
+        "normal_precision": 0.9365079365079365,
+        "normal_recall": 0.6124567474048442,
+        "normal_support": 289,
+        "pr_auc": 0.8258857073271734,
+        "prediction_distribution": {
+          "anomaly": 211,
+          "normal": 189
+        },
+        "roc_auc": 0.8881043673431216
+      }
+    },
+    "rf_n100_d16_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.8575,
+        "anomaly_f1": 0.7348837209302326,
+        "anomaly_precision": 0.7596153846153846,
+        "anomaly_recall": 0.7117117117117117,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8126032607001465,
+        "normal_f1": 0.9025641025641026,
+        "normal_precision": 0.8918918918918919,
+        "normal_recall": 0.9134948096885813,
+        "normal_support": 289,
+        "pr_auc": 0.8277006563935629,
+        "prediction_distribution": {
+          "anomaly": 104,
+          "normal": 296
+        },
+        "roc_auc": 0.8795473674366407
+      }
+    },
+    "rf_n100_d8_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 8,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.735,
+        "anomaly_f1": 0.6293706293706294,
+        "anomaly_precision": 0.5142857142857142,
+        "anomaly_recall": 0.8108108108108109,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7583465818759937,
+        "normal_f1": 0.7937743190661478,
+        "normal_precision": 0.9066666666666666,
+        "normal_recall": 0.7058823529411765,
+        "normal_support": 289,
+        "pr_auc": 0.8034799439855912,
+        "prediction_distribution": {
+          "anomaly": 175,
+          "normal": 225
+        },
+        "roc_auc": 0.8675613329592569
+      }
+    },
+    "rf_n100_d8_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 8,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.815,
+        "anomaly_f1": 0.672566371681416,
+        "anomaly_precision": 0.6608695652173913,
+        "anomaly_recall": 0.6846846846846847,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7748682938994358,
+        "normal_f1": 0.8710801393728222,
+        "normal_precision": 0.8771929824561403,
+        "normal_recall": 0.8650519031141869,
+        "normal_support": 289,
+        "pr_auc": 0.8103342079451097,
+        "prediction_distribution": {
+          "anomaly": 115,
+          "normal": 285
+        },
+        "roc_auc": 0.8729230961064871
+      }
+    },
+    "rf_n100_d8_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 8,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.6975,
+        "anomaly_f1": 0.6206896551724138,
+        "anomaly_precision": 0.47596153846153844,
+        "anomaly_recall": 0.8918918918918919,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7573646310670532,
+        "normal_f1": 0.7484407484407485,
+        "normal_precision": 0.9375,
+        "normal_recall": 0.6228373702422145,
+        "normal_support": 289,
+        "pr_auc": 0.8288169378508635,
+        "prediction_distribution": {
+          "anomaly": 208,
+          "normal": 192
+        },
+        "roc_auc": 0.8931855731163689
+      }
+    },
+    "rf_n100_d8_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 8,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.845,
+        "anomaly_f1": 0.7155963302752294,
+        "anomaly_precision": 0.7289719626168224,
+        "anomaly_recall": 0.7027027027027027,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8011783409707285,
+        "normal_f1": 0.8934707903780069,
+        "normal_precision": 0.8873720136518771,
+        "normal_recall": 0.8996539792387543,
+        "normal_support": 289,
+        "pr_auc": 0.824177587395422,
+        "prediction_distribution": {
+          "anomaly": 107,
+          "normal": 293
+        },
+        "roc_auc": 0.881854172511612
+      }
+    },
+    "rf_n100_dnone_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.74,
+        "anomaly_f1": 0.6090225563909775,
+        "anomaly_precision": 0.5225806451612903,
+        "anomaly_recall": 0.7297297297297297,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7368371832039652,
+        "normal_f1": 0.8052434456928839,
+        "normal_precision": 0.8775510204081632,
+        "normal_recall": 0.7439446366782007,
+        "normal_support": 289,
+        "pr_auc": 0.7801672931990787,
+        "prediction_distribution": {
+          "anomaly": 155,
+          "normal": 245
+        },
+        "roc_auc": 0.8420306119268057
+      }
+    },
+    "rf_n100_dnone_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7775,
+        "anomaly_f1": 0.6509803921568628,
+        "anomaly_precision": 0.5763888888888888,
+        "anomaly_recall": 0.7477477477477478,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7683375416939431,
+        "normal_f1": 0.8366972477064221,
+        "normal_precision": 0.890625,
+        "normal_recall": 0.7889273356401384,
+        "normal_support": 289,
+        "pr_auc": 0.7918714625180314,
+        "prediction_distribution": {
+          "anomaly": 144,
+          "normal": 256
+        },
+        "roc_auc": 0.8451479160821721
+      }
+    },
+    "rf_n100_dnone_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.69,
+        "anomaly_f1": 0.6149068322981367,
+        "anomaly_precision": 0.46919431279620855,
+        "anomaly_recall": 0.8918918918918919,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7521743196483681,
+        "normal_f1": 0.7405857740585774,
+        "normal_precision": 0.9365079365079365,
+        "normal_recall": 0.6124567474048442,
+        "normal_support": 289,
+        "pr_auc": 0.8258857073271734,
+        "prediction_distribution": {
+          "anomaly": 211,
+          "normal": 189
+        },
+        "roc_auc": 0.8881043673431216
+      }
+    },
+    "rf_n100_dnone_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 100
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": {
+        "accuracy": 0.8683693516699411,
+        "anomaly_f1": 0.7774086378737541,
+        "anomaly_precision": 0.785234899328859,
+        "anomaly_recall": 0.7697368421052632,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.8400504938817632,
+        "normal_f1": 0.9065550906555091,
+        "normal_precision": 0.9027777777777778,
+        "normal_recall": 0.9103641456582633,
+        "normal_support": 357,
+        "pr_auc": 0.8449130374700579,
+        "prediction_distribution": {
+          "anomaly": 149,
+          "normal": 360
+        },
+        "roc_auc": 0.865638360607401
+      },
+      "val_metrics": {
+        "accuracy": 0.8575,
+        "anomaly_f1": 0.7348837209302326,
+        "anomaly_precision": 0.7596153846153846,
+        "anomaly_recall": 0.7117117117117117,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8126032607001465,
+        "normal_f1": 0.9025641025641026,
+        "normal_precision": 0.8918918918918919,
+        "normal_recall": 0.9134948096885813,
+        "normal_support": 289,
+        "pr_auc": 0.8277006563935629,
+        "prediction_distribution": {
+          "anomaly": 104,
+          "normal": 296
+        },
+        "roc_auc": 0.8795473674366407
+      }
+    },
+    "rf_n300_d16_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 16,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7575,
+        "anomaly_f1": 0.6254826254826255,
+        "anomaly_precision": 0.5472972972972973,
+        "anomaly_recall": 0.7297297297297297,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7489479098475638,
+        "normal_f1": 0.8207024029574861,
+        "normal_precision": 0.8809523809523809,
+        "normal_recall": 0.7681660899653979,
+        "normal_support": 289,
+        "pr_auc": 0.7748001659674332,
+        "prediction_distribution": {
+          "anomaly": 148,
+          "normal": 252
+        },
+        "roc_auc": 0.8386327503974562
+      }
+    },
+    "rf_n300_d16_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 16,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7475,
+        "anomaly_f1": 0.6188679245283019,
+        "anomaly_precision": 0.5324675324675324,
+        "anomaly_recall": 0.7387387387387387,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7448018953209264,
+        "normal_f1": 0.811214953271028,
+        "normal_precision": 0.8821138211382114,
+        "normal_recall": 0.7508650519031141,
+        "normal_support": 289,
+        "pr_auc": 0.7904685688717124,
+        "prediction_distribution": {
+          "anomaly": 154,
+          "normal": 246
+        },
+        "roc_auc": 0.8467689142429627
+      }
+    },
+    "rf_n300_d16_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.71,
+        "anomaly_f1": 0.6329113924050633,
+        "anomaly_precision": 0.4878048780487805,
+        "anomaly_recall": 0.9009009009009009,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7687895507964713,
+        "normal_f1": 0.7603305785123967,
+        "normal_precision": 0.9435897435897436,
+        "normal_recall": 0.6366782006920415,
+        "normal_support": 289,
+        "pr_auc": 0.8295773371203657,
+        "prediction_distribution": {
+          "anomaly": 205,
+          "normal": 195
+        },
+        "roc_auc": 0.8886654820910876
+      }
+    },
+    "rf_n300_d16_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 16,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.84,
+        "anomaly_f1": 0.7142857142857143,
+        "anomaly_precision": 0.7079646017699115,
+        "anomaly_recall": 0.7207207207207207,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.803266934754824,
+        "normal_f1": 0.8888888888888888,
+        "normal_precision": 0.89198606271777,
+        "normal_recall": 0.8858131487889274,
+        "normal_support": 289,
+        "pr_auc": 0.8253389442738679,
+        "prediction_distribution": {
+          "anomaly": 113,
+          "normal": 287
+        },
+        "roc_auc": 0.8771314567162318
+      }
+    },
+    "rf_n300_d8_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 8,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.755,
+        "anomaly_f1": 0.644927536231884,
+        "anomaly_precision": 0.5393939393939394,
+        "anomaly_recall": 0.8018018018018018,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7694130116275445,
+        "normal_f1": 0.8129770992366412,
+        "normal_precision": 0.9063829787234042,
+        "normal_recall": 0.7370242214532872,
+        "normal_support": 289,
+        "pr_auc": 0.7984542547934211,
+        "prediction_distribution": {
+          "anomaly": 165,
+          "normal": 235
+        },
+        "roc_auc": 0.8595342747591883
+      }
+    },
+    "rf_n300_d8_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 8,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.82,
+        "anomaly_f1": 0.6756756756756757,
+        "anomaly_precision": 0.6756756756756757,
+        "anomaly_recall": 0.6756756756756757,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7755541008136164,
+        "normal_f1": 0.8754325259515571,
+        "normal_precision": 0.8754325259515571,
+        "normal_recall": 0.8754325259515571,
+        "normal_support": 289,
+        "pr_auc": 0.8075521579888085,
+        "prediction_distribution": {
+          "anomaly": 111,
+          "normal": 289
+        },
+        "roc_auc": 0.8671093238567287
+      }
+    },
+    "rf_n300_d8_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": 8,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.71,
+        "anomaly_f1": 0.6329113924050633,
+        "anomaly_precision": 0.4878048780487805,
+        "anomaly_recall": 0.9009009009009009,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7687895507964713,
+        "normal_f1": 0.7603305785123967,
+        "normal_precision": 0.9435897435897436,
+        "normal_recall": 0.6366782006920415,
+        "normal_support": 289,
+        "pr_auc": 0.8352927361729233,
+        "prediction_distribution": {
+          "anomaly": 205,
+          "normal": 195
+        },
+        "roc_auc": 0.8949000904018205
+      }
+    },
+    "rf_n300_d8_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": 8,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.845,
+        "anomaly_f1": 0.7207207207207207,
+        "anomaly_precision": 0.7207207207207207,
+        "anomaly_recall": 0.7207207207207207,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8067271423672808,
+        "normal_f1": 0.8927335640138409,
+        "normal_precision": 0.8927335640138409,
+        "normal_recall": 0.8927335640138409,
+        "normal_support": 289,
+        "pr_auc": 0.8221352930126499,
+        "prediction_distribution": {
+          "anomaly": 111,
+          "normal": 289
+        },
+        "roc_auc": 0.8764924093643818
+      }
+    },
+    "rf_n300_dnone_leaf1_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.76,
+        "anomaly_f1": 0.627906976744186,
+        "anomaly_precision": 0.5510204081632653,
+        "anomaly_recall": 0.7297297297297297,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7506780136537923,
+        "normal_f1": 0.8228782287822878,
+        "normal_precision": 0.8814229249011858,
+        "normal_recall": 0.7716262975778547,
+        "normal_support": 289,
+        "pr_auc": 0.7747511777135381,
+        "prediction_distribution": {
+          "anomaly": 147,
+          "normal": 253
+        },
+        "roc_auc": 0.8389756538545466
+      }
+    },
+    "rf_n300_dnone_leaf1_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.745,
+        "anomaly_f1": 0.6194029850746269,
+        "anomaly_precision": 0.5286624203821656,
+        "anomaly_recall": 0.7477477477477478,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7458461922129742,
+        "normal_f1": 0.8082706766917294,
+        "normal_precision": 0.8847736625514403,
+        "normal_recall": 0.7439446366782007,
+        "normal_support": 289,
+        "pr_auc": 0.7897612650613337,
+        "prediction_distribution": {
+          "anomaly": 157,
+          "normal": 243
+        },
+        "roc_auc": 0.8446647339380904
+      }
+    },
+    "rf_n300_dnone_leaf5_cwbalanced": {
+      "config": {
+        "class_weight": "balanced",
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.71,
+        "anomaly_f1": 0.6329113924050633,
+        "anomaly_precision": 0.4878048780487805,
+        "anomaly_recall": 0.9009009009009009,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7687895507964713,
+        "normal_f1": 0.7603305785123967,
+        "normal_precision": 0.9435897435897436,
+        "normal_recall": 0.6366782006920415,
+        "normal_support": 289,
+        "pr_auc": 0.8295773371203657,
+        "prediction_distribution": {
+          "anomaly": 205,
+          "normal": 195
+        },
+        "roc_auc": 0.8886654820910876
+      }
+    },
+    "rf_n300_dnone_leaf5_cwnone": {
+      "config": {
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 300
+      },
+      "family": "RandomForestClassifier",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.84,
+        "anomaly_f1": 0.7142857142857143,
+        "anomaly_precision": 0.7079646017699115,
+        "anomaly_recall": 0.7207207207207207,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.803266934754824,
+        "normal_f1": 0.8888888888888888,
+        "normal_precision": 0.89198606271777,
+        "normal_recall": 0.8858131487889274,
+        "normal_support": 289,
+        "pr_auc": 0.8253389442738679,
+        "prediction_distribution": {
+          "anomaly": 113,
+          "normal": 287
+        },
+        "roc_auc": 0.8771314567162318
+      }
+    },
+    "rule_based": {
+      "config": {
+        "pressure_quantile": 0.95
+      },
+      "family": "RuleBasedBinaryDetector",
+      "test_metrics": null,
+      "val_metrics": {
+        "accuracy": 0.7225,
+        "anomaly_f1": 0.6105263157894737,
+        "anomaly_precision": 0.5,
+        "anomaly_recall": 0.7837837837837838,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7413728607500234,
+        "normal_f1": 0.7844660194174757,
+        "normal_precision": 0.8938053097345132,
+        "normal_recall": 0.698961937716263,
+        "normal_support": 289,
+        "pr_auc": 0.5762006741214661,
+        "prediction_distribution": {
+          "anomaly": 174,
+          "normal": 226
+        },
+        "roc_auc": 0.793618878393965
+      }
+    }
+  },
+  "test_best": {
+    "accuracy": 0.8683693516699411,
+    "anomaly_f1": 0.7774086378737541,
+    "anomaly_precision": 0.785234899328859,
+    "anomaly_recall": 0.7697368421052632,
+    "anomaly_support": 152,
+    "balanced_accuracy": 0.8400504938817632,
+    "normal_f1": 0.9065550906555091,
+    "normal_precision": 0.9027777777777778,
+    "normal_recall": 0.9103641456582633,
+    "normal_support": 357,
+    "pr_auc": 0.8449130374700579,
+    "prediction_distribution": {
+      "anomaly": 149,
+      "normal": 360
+    },
+    "roc_auc": 0.865638360607401
+  }
+}

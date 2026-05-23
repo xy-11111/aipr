@@ -36,6 +36,15 @@ type agentOptions struct {
 	ServiceSelector     string
 	SyncMode            string
 	SyncPollInterval    string
+	CTEntryTimeout      string
+	CTGCInterval        string
+	TelemetryEnable     bool
+	TelemetryWindow     string
+	TelemetryFormat     string
+	TelemetryOutput     string
+	TelemetryExperiment string
+	TelemetryEventsFile string
+	TelemetryService    string
 	ExtraArgs           []string
 	BPFCFlags           []string
 	PreCleanup          bool
@@ -176,6 +185,15 @@ func loadOptions() (agentOptions, error) {
 		ServiceSelector:     envString("NODEPORT_SERVICE_SELECTOR", ""),
 		SyncMode:            envString("NODEPORT_SYNC_MODE", "watch"),
 		SyncPollInterval:    envString("NODEPORT_SYNC_POLL_INTERVAL", "5"),
+		CTEntryTimeout:      envString("NODEPORT_CT_ENTRY_TIMEOUT", "10m"),
+		CTGCInterval:        envString("NODEPORT_CT_GC_INTERVAL", "30s"),
+		TelemetryEnable:     envBool("NODEPORT_TELEMETRY_ENABLE", false),
+		TelemetryWindow:     envString("NODEPORT_TELEMETRY_WINDOW", "1s"),
+		TelemetryFormat:     envString("NODEPORT_TELEMETRY_FORMAT", "csv"),
+		TelemetryOutput:     envString("NODEPORT_TELEMETRY_OUTPUT", "/var/log/ebpf-nodeport/telemetry"),
+		TelemetryExperiment: envString("NODEPORT_TELEMETRY_EXPERIMENT_ID", "default"),
+		TelemetryEventsFile: envString("NODEPORT_TELEMETRY_EVENTS_FILE", ""),
+		TelemetryService:    envString("NODEPORT_TELEMETRY_SERVICE", ""),
 		ExtraArgs:           strings.Fields(envString("NODEPORT_EXTRA_ARGS", "")),
 		BPFCFlags:           strings.Fields(envString("BPF_CFLAGS", "")),
 		PreCleanup:          envBool("PRE_CLEANUP", true),
@@ -212,6 +230,33 @@ func buildSyncArgs(opts agentOptions, nodeName string, profile envdetect.Environ
 	}
 	if opts.SyncMode == "poll" {
 		args = append(args, "--poll-interval", opts.SyncPollInterval)
+	}
+	if opts.CTEntryTimeout != "" {
+		args = append(args, "--ct-entry-timeout", opts.CTEntryTimeout)
+	}
+	if opts.CTGCInterval != "" {
+		args = append(args, "--ct-gc-interval", opts.CTGCInterval)
+	}
+	if opts.TelemetryEnable {
+		args = append(args, "--telemetry-enable")
+	}
+	if opts.TelemetryWindow != "" {
+		args = append(args, "--telemetry-window", opts.TelemetryWindow)
+	}
+	if opts.TelemetryFormat != "" {
+		args = append(args, "--telemetry-format", opts.TelemetryFormat)
+	}
+	if opts.TelemetryOutput != "" {
+		args = append(args, "--telemetry-output", opts.TelemetryOutput)
+	}
+	if opts.TelemetryExperiment != "" {
+		args = append(args, "--telemetry-experiment-id", opts.TelemetryExperiment)
+	}
+	if opts.TelemetryEventsFile != "" {
+		args = append(args, "--telemetry-events-file", opts.TelemetryEventsFile)
+	}
+	if opts.TelemetryService != "" {
+		args = append(args, "--telemetry-service", opts.TelemetryService)
 	}
 	args = append(args, opts.ExtraArgs...)
 	if opts.DryRun {

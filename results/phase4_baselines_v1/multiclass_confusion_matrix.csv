@@ -1,0 +1,7 @@
+true_label,pred:backend_churn,pred:conntrack_pressure,pred:control_plane_recovery,pred:load_surge,pred:path_degradation,pred:service_reconcile
+true:backend_churn,0,0,1,0,4,1
+true:conntrack_pressure,0,28,0,9,0,5
+true:control_plane_recovery,1,0,5,0,2,2
+true:load_surge,0,19,0,21,0,2
+true:path_degradation,1,0,0,19,18,4
+true:service_reconcile,0,0,0,3,3,4

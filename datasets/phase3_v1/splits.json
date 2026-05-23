@@ -1,0 +1,127 @@
+{
+  "assignments": {
+    "agent-restart-20260523T083729Z": "train",
+    "agent-restart-20260523T113700Z": "val",
+    "backend-rollout-restart-20260523T072229Z": "train",
+    "backend-rollout-restart-20260523T083411Z": "val",
+    "conntrack-pressure-20260523T084229Z": "train",
+    "conntrack-pressure-20260523T113900Z": "val",
+    "conntrack-pressure-20260523T114000Z": "test",
+    "endpointslice-churn-20260523T084408Z": "test",
+    "map-rebuild-20260523T083956Z": "test",
+    "normal-steady-state-20260523T072104Z": "train",
+    "normal-steady-state-20260523T083153Z": "test",
+    "path-degradation-netem-20260523T084038Z": "train",
+    "path-degradation-netem-20260523T114300Z": "val",
+    "path-degradation-netem-20260523T114400Z": "test",
+    "service-delete-recreate-20260523T084325Z": "train",
+    "service-delete-recreate-20260523T114500Z": "val",
+    "service-delete-recreate-20260523T114600Z": "test",
+    "traffic-burst-20260523T084558Z": "train",
+    "traffic-burst-20260523T114100Z": "val",
+    "traffic-burst-20260523T114200Z": "test"
+  },
+  "experiments": {
+    "agent-restart-20260523T083729Z": {
+      "primary_label": "control_plane_recovery",
+      "scenario": "agent_restart",
+      "split": "train"
+    },
+    "agent-restart-20260523T113700Z": {
+      "primary_label": "control_plane_recovery",
+      "scenario": "agent_restart",
+      "split": "val"
+    },
+    "backend-rollout-restart-20260523T072229Z": {
+      "primary_label": "backend_churn",
+      "scenario": "backend_rollout_restart",
+      "split": "train"
+    },
+    "backend-rollout-restart-20260523T083411Z": {
+      "primary_label": "backend_churn",
+      "scenario": "backend_rollout_restart",
+      "split": "val"
+    },
+    "conntrack-pressure-20260523T084229Z": {
+      "primary_label": "conntrack_pressure",
+      "scenario": "conntrack_pressure",
+      "split": "train"
+    },
+    "conntrack-pressure-20260523T113900Z": {
+      "primary_label": "conntrack_pressure",
+      "scenario": "conntrack_pressure",
+      "split": "val"
+    },
+    "conntrack-pressure-20260523T114000Z": {
+      "primary_label": "conntrack_pressure",
+      "scenario": "conntrack_pressure",
+      "split": "test"
+    },
+    "endpointslice-churn-20260523T084408Z": {
+      "primary_label": "backend_churn",
+      "scenario": "endpointslice_churn",
+      "split": "test"
+    },
+    "map-rebuild-20260523T083956Z": {
+      "primary_label": "control_plane_recovery",
+      "scenario": "map_rebuild",
+      "split": "test"
+    },
+    "normal-steady-state-20260523T072104Z": {
+      "primary_label": "normal",
+      "scenario": "normal_steady_state",
+      "split": "train"
+    },
+    "normal-steady-state-20260523T083153Z": {
+      "primary_label": "normal",
+      "scenario": "normal_steady_state",
+      "split": "test"
+    },
+    "path-degradation-netem-20260523T084038Z": {
+      "primary_label": "path_degradation",
+      "scenario": "path_degradation_netem",
+      "split": "train"
+    },
+    "path-degradation-netem-20260523T114300Z": {
+      "primary_label": "path_degradation",
+      "scenario": "path_degradation_netem",
+      "split": "val"
+    },
+    "path-degradation-netem-20260523T114400Z": {
+      "primary_label": "path_degradation",
+      "scenario": "path_degradation_netem",
+      "split": "test"
+    },
+    "service-delete-recreate-20260523T084325Z": {
+      "primary_label": "service_reconcile",
+      "scenario": "service_delete_recreate",
+      "split": "train"
+    },
+    "service-delete-recreate-20260523T114500Z": {
+      "primary_label": "service_reconcile",
+      "scenario": "service_delete_recreate",
+      "split": "val"
+    },
+    "service-delete-recreate-20260523T114600Z": {
+      "primary_label": "service_reconcile",
+      "scenario": "service_delete_recreate",
+      "split": "test"
+    },
+    "traffic-burst-20260523T084558Z": {
+      "primary_label": "load_surge",
+      "scenario": "traffic_burst",
+      "split": "train"
+    },
+    "traffic-burst-20260523T114100Z": {
+      "primary_label": "load_surge",
+      "scenario": "traffic_burst",
+      "split": "val"
+    },
+    "traffic-burst-20260523T114200Z": {
+      "primary_label": "load_surge",
+      "scenario": "traffic_burst",
+      "split": "test"
+    }
+  },
+  "split_strategy": "group_by_primary_label_then_split_by_experiment_id"
+}

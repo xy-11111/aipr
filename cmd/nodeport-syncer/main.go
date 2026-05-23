@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"sort"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -30,37 +31,53 @@ import (
 )
 
 const (
-	protoTCP        = 6
-	routingNative   = "native"
-	routingEncap    = "encap"
-	defaultSvcPin   = "/sys/fs/bpf/nodeport_tc/maps/nodeport_service_map"
-	defaultBckPin   = "/sys/fs/bpf/nodeport_tc/maps/nodeport_backend_map"
-	defaultRRPin    = "/sys/fs/bpf/nodeport_tc/maps/nodeport_rr_state_map"
-	defaultCfgPin   = "/sys/fs/bpf/nodeport_tc/maps/nodeport_config_map"
-	defaultDebounce = 200 * time.Millisecond
+	protoTCP                 = 6
+	routingNative            = "native"
+	routingEncap             = "encap"
+	defaultSvcPin            = "/sys/fs/bpf/nodeport_tc/maps/nodeport_service_map"
+	defaultBckPin            = "/sys/fs/bpf/nodeport_tc/maps/nodeport_backend_map"
+	defaultRRPin             = "/sys/fs/bpf/nodeport_tc/maps/nodeport_rr_state_map"
+	defaultCfgPin            = "/sys/fs/bpf/nodeport_tc/maps/nodeport_config_map"
+	defaultCTPin             = "/sys/fs/bpf/nodeport_tc/maps/nodeport_ct_map"
+	defaultFwdCTPin          = "/sys/fs/bpf/nodeport_tc/maps/nodeport_fwd_ct_map"
+	defaultStatsPin          = "/sys/fs/bpf/nodeport_tc/maps/nodeport_stats_map"
+	defaultDebounce          = 200 * time.Millisecond
+	defaultConntrackTimeout  = 10 * time.Minute
+	defaultConntrackInterval = 30 * time.Second
+	defaultTelemetryWindow   = time.Second
+	defaultTelemetryFormat   = "csv"
+	defaultTelemetryOutput   = "/var/log/ebpf-nodeport/telemetry"
 )
 
 type options struct {
-	Kubectl             string
 	NodeName            string
 	ServiceSelector     string
+	ClearTargetState    bool
 	SNATIP              string
 	SNATIface           string
 	ExternalIface       string
 	LocalDeliveryIface  string
 	RemoteDeliveryIface string
 	RoutingMode         string
-	AttachIface         string
-	InnerIfaces         string
-	UpdateScript        string
-	UpdateConfigScript  string
 	ServiceMapPin       string
 	BackendMapPin       string
 	RRStateMapPin       string
 	ConfigMapPin        string
+	CTMapPin            string
+	FwdCTMapPin         string
+	StatsMapPin         string
 	SyncMode            string
 	PollInterval        time.Duration
 	WatchDebounce       time.Duration
+	CTEntryTimeout      time.Duration
+	CTGCInterval        time.Duration
+	TelemetryEnable     bool
+	TelemetryWindow     time.Duration
+	TelemetryFormat     string
+	TelemetryOutput     string
+	TelemetryExperiment string
+	TelemetryEventsFile string
+	TelemetryService    string
 	DryRun              bool
 }
 
@@ -126,16 +143,23 @@ type pinnedMaps struct {
 	backendMapPin string
 	rrStateMapPin string
 	configMapPin  string
+	ctMapPin      string
+	fwdCTMapPin   string
+	statsMapPin   string
 	serviceMap    *ebpf.Map
 	backendMap    *ebpf.Map
 	rrStateMap    *ebpf.Map
 	configMap     *ebpf.Map
+	ctMap         *ebpf.Map
+	fwdCTMap      *ebpf.Map
+	statsMap      *ebpf.Map
+	possibleCPUs  int
 }
 
 type controller struct {
 	opts           options
 	selector       *serviceSelector
-	clientset      kubernetes.Interface
+	telemetrySel   *serviceSelector
 	serviceLister  corelisters.ServiceLister
 	nodeLister     corelisters.NodeLister
 	sliceLister    discoverylisters.EndpointSliceLister
@@ -144,6 +168,8 @@ type controller struct {
 	nodeName       string
 	appliedConfig  *deliveryConfig
 	appliedEntries map[serviceID]nodePortEntry
+	stateMu        sync.RWMutex
+	telemetry      *telemetryWindowAccumulator
 }
 
 func main() {
@@ -155,6 +181,10 @@ func main() {
 	}
 
 	selector, err := parseServiceSelector(opts.ServiceSelector)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	telemetrySel, err := resolveTelemetrySelector(opts)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
@@ -183,7 +213,7 @@ func main() {
 	ctrl := &controller{
 		opts:           opts,
 		selector:       selector,
-		clientset:      clientset,
+		telemetrySel:   telemetrySel,
 		serviceLister:  serviceInformer.Lister(),
 		nodeLister:     nodeInformer.Lister(),
 		sliceLister:    sliceInformer.Lister(),
@@ -191,30 +221,68 @@ func main() {
 		maps:           maps,
 		nodeName:       strings.TrimSpace(opts.NodeName),
 		appliedEntries: make(map[serviceID]nodePortEntry),
+		telemetry:      newTelemetryWindowAccumulator(),
 	}
 
-	handler := cache.ResourceEventHandlerFuncs{
+	serviceHandler := cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
+			ctrl.noteServiceEvent(obj)
 			ctrl.enqueue("add")
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			if sameResourceVersion(oldObj, newObj) {
 				return
 			}
+			ctrl.noteServiceEvent(newObj)
 			ctrl.enqueue("update")
 		},
 		DeleteFunc: func(obj interface{}) {
+			ctrl.noteServiceEvent(obj)
+			ctrl.enqueue("delete")
+		},
+	}
+	nodeHandler := cache.ResourceEventHandlerFuncs{
+		AddFunc: func(obj interface{}) {
+			ctrl.noteNodeEvent(obj)
+			ctrl.enqueue("add")
+		},
+		UpdateFunc: func(oldObj, newObj interface{}) {
+			if sameResourceVersion(oldObj, newObj) {
+				return
+			}
+			ctrl.noteNodeEvent(newObj)
+			ctrl.enqueue("update")
+		},
+		DeleteFunc: func(obj interface{}) {
+			ctrl.noteNodeEvent(obj)
+			ctrl.enqueue("delete")
+		},
+	}
+	sliceHandler := cache.ResourceEventHandlerFuncs{
+		AddFunc: func(obj interface{}) {
+			ctrl.noteSliceEvent(obj)
+			ctrl.enqueue("add")
+		},
+		UpdateFunc: func(oldObj, newObj interface{}) {
+			if sameResourceVersion(oldObj, newObj) {
+				return
+			}
+			ctrl.noteSliceEvent(newObj)
+			ctrl.enqueue("update")
+		},
+		DeleteFunc: func(obj interface{}) {
+			ctrl.noteSliceEvent(obj)
 			ctrl.enqueue("delete")
 		},
 	}
 
-	if _, err := serviceInformer.Informer().AddEventHandler(handler); err != nil {
+	if _, err := serviceInformer.Informer().AddEventHandler(serviceHandler); err != nil {
 		log.Fatalf("error: add service handler: %v", err)
 	}
-	if _, err := nodeInformer.Informer().AddEventHandler(handler); err != nil {
+	if _, err := nodeInformer.Informer().AddEventHandler(nodeHandler); err != nil {
 		log.Fatalf("error: add node handler: %v", err)
 	}
-	if _, err := sliceInformer.Informer().AddEventHandler(handler); err != nil {
+	if _, err := sliceInformer.Informer().AddEventHandler(sliceHandler); err != nil {
 		log.Fatalf("error: add endpointslice handler: %v", err)
 	}
 
@@ -240,23 +308,17 @@ func main() {
 		log.Fatalf("error: timed out waiting for informer caches to sync")
 	}
 
+	if opts.ClearTargetState {
+		if err := ctrl.clearTargetState("initial target clear"); err != nil {
+			log.Fatalf("error: %v", err)
+		}
+	}
 	if err := ctrl.reconcile("initial sync"); err != nil {
 		log.Fatalf("error: %v", err)
 	}
 
-	switch opts.SyncMode {
-	case "oneshot":
-		return
-	case "poll":
-		if err := ctrl.runPoll(ctx); err != nil {
-			log.Fatalf("error: %v", err)
-		}
-	case "watch":
-		if err := ctrl.runWatch(ctx); err != nil {
-			log.Fatalf("error: %v", err)
-		}
-	default:
-		log.Fatalf("error: unsupported sync mode: %s", opts.SyncMode)
+	if err := runSteadyState(ctx, ctrl); err != nil {
+		log.Fatalf("error: %v", err)
 	}
 }
 
@@ -265,47 +327,62 @@ func parseOptions() (options, error) {
 	var pollInterval float64
 	var watchDebounce float64
 
-	flag.StringVar(&opts.Kubectl, "kubectl", "kubectl", "unused compatibility flag")
 	flag.StringVar(&opts.NodeName, "node-name", os.Getenv("NODE_NAME"), "local node name")
 	flag.StringVar(&opts.ServiceSelector, "service", "", "optional namespace/name selector")
+	flag.BoolVar(&opts.ClearTargetState, "clear-target-state", false, "in oneshot mode, clear current target service state before reconciling it")
 	flag.StringVar(&opts.SNATIP, "snat-ip", "", "SNAT source IPv4 address")
 	flag.StringVar(&opts.SNATIface, "snat-iface", "cni0", "interface used to detect SNAT IPv4")
 	flag.StringVar(&opts.ExternalIface, "external-iface", "", "external interface name")
 	flag.StringVar(&opts.LocalDeliveryIface, "local-delivery-iface", "", "local pod delivery interface")
 	flag.StringVar(&opts.RemoteDeliveryIface, "remote-delivery-iface", "", "remote pod delivery interface")
 	flag.StringVar(&opts.RoutingMode, "routing-mode", "", "native or encap")
-	flag.StringVar(&opts.AttachIface, "attach-iface", "", "unused compatibility flag")
-	flag.StringVar(&opts.InnerIfaces, "inner-ifaces", "", "unused compatibility flag")
-	flag.StringVar(&opts.UpdateScript, "update-script", "", "unused compatibility flag")
-	flag.StringVar(&opts.UpdateConfigScript, "update-config-script", "", "unused compatibility flag")
 	flag.StringVar(&opts.ServiceMapPin, "service-map-pin", defaultSvcPin, "pinned service map path")
 	flag.StringVar(&opts.BackendMapPin, "backend-map-pin", defaultBckPin, "pinned backend map path")
 	flag.StringVar(&opts.RRStateMapPin, "rr-state-map-pin", defaultRRPin, "pinned rr-state map path")
 	flag.StringVar(&opts.ConfigMapPin, "config-map-pin", defaultCfgPin, "pinned config map path")
+	flag.StringVar(&opts.CTMapPin, "ct-map-pin", defaultCTPin, "pinned conntrack map path")
+	flag.StringVar(&opts.FwdCTMapPin, "fwd-ct-map-pin", defaultFwdCTPin, "pinned forward conntrack map path")
+	flag.StringVar(&opts.StatsMapPin, "stats-map-pin", defaultStatsPin, "pinned stats map path")
 	flag.StringVar(&opts.SyncMode, "sync-mode", "watch", "oneshot, poll, or watch")
 	flag.Float64Var(&pollInterval, "poll-interval", 5.0, "poll interval in seconds")
 	flag.Float64Var(&watchDebounce, "watch-debounce", 0.2, "watch debounce in seconds")
+	flag.DurationVar(&opts.CTEntryTimeout, "ct-entry-timeout", defaultConntrackTimeout, "maximum idle time before a conntrack entry is reaped")
+	flag.DurationVar(&opts.CTGCInterval, "ct-gc-interval", defaultConntrackInterval, "interval between conntrack GC runs; set to 0 to disable")
+	flag.BoolVar(&opts.TelemetryEnable, "telemetry-enable", false, "enable node-level telemetry export")
+	flag.DurationVar(&opts.TelemetryWindow, "telemetry-window", defaultTelemetryWindow, "telemetry collection window")
+	flag.StringVar(&opts.TelemetryFormat, "telemetry-format", defaultTelemetryFormat, "telemetry output format")
+	flag.StringVar(&opts.TelemetryOutput, "telemetry-output", defaultTelemetryOutput, "telemetry output root directory")
+	flag.StringVar(&opts.TelemetryExperiment, "telemetry-experiment-id", "default", "telemetry experiment identifier")
+	flag.StringVar(&opts.TelemetryEventsFile, "telemetry-events-file", "", "optional external events manifest for label mapping")
+	flag.StringVar(&opts.TelemetryService, "telemetry-service", "", "target service for telemetry labels and backend context")
 	flag.BoolVar(&opts.DryRun, "dry-run", false, "log map operations without applying them")
 	flag.Parse()
 
+	if err := validateOptions(&opts, pollInterval, watchDebounce); err != nil {
+		return opts, err
+	}
+	return opts, nil
+}
+
+func validateOptions(opts *options, pollInterval, watchDebounce float64) error {
 	opts.SyncMode = strings.ToLower(strings.TrimSpace(opts.SyncMode))
 	if opts.SyncMode != "oneshot" && opts.SyncMode != "poll" && opts.SyncMode != "watch" {
-		return opts, fmt.Errorf("--sync-mode must be oneshot, poll, or watch")
+		return fmt.Errorf("--sync-mode must be oneshot, poll, or watch")
 	}
 
 	opts.RoutingMode = strings.ToLower(strings.TrimSpace(opts.RoutingMode))
 	if opts.RoutingMode != "" && opts.RoutingMode != routingNative && opts.RoutingMode != routingEncap {
-		return opts, fmt.Errorf("--routing-mode must be %q or %q", routingNative, routingEncap)
+		return fmt.Errorf("--routing-mode must be %q or %q", routingNative, routingEncap)
 	}
 
 	if strings.TrimSpace(opts.ExternalIface) == "" {
-		return opts, fmt.Errorf("--external-iface is required")
+		return fmt.Errorf("--external-iface is required")
 	}
 	if strings.TrimSpace(opts.LocalDeliveryIface) == "" {
-		return opts, fmt.Errorf("--local-delivery-iface is required")
+		return fmt.Errorf("--local-delivery-iface is required")
 	}
 	if opts.RoutingMode == routingEncap && strings.TrimSpace(opts.RemoteDeliveryIface) == "" {
-		return opts, fmt.Errorf("--remote-delivery-iface is required when routing-mode=encap")
+		return fmt.Errorf("--remote-delivery-iface is required when routing-mode=encap")
 	}
 
 	opts.PollInterval = durationFromSeconds(pollInterval)
@@ -316,8 +393,41 @@ func parseOptions() (options, error) {
 	if opts.PollInterval <= 0 {
 		opts.PollInterval = 5 * time.Second
 	}
+	if opts.CTEntryTimeout < 0 {
+		return fmt.Errorf("--ct-entry-timeout must be >= 0")
+	}
+	if opts.CTGCInterval < 0 {
+		return fmt.Errorf("--ct-gc-interval must be >= 0")
+	}
+	opts.TelemetryFormat = strings.ToLower(strings.TrimSpace(opts.TelemetryFormat))
+	if opts.TelemetryEnable {
+		if opts.TelemetryWindow <= 0 {
+			return fmt.Errorf("--telemetry-window must be > 0 when telemetry is enabled")
+		}
+		if opts.TelemetryFormat == "" {
+			opts.TelemetryFormat = defaultTelemetryFormat
+		}
+		if opts.TelemetryFormat != defaultTelemetryFormat {
+			return fmt.Errorf("--telemetry-format must be %q", defaultTelemetryFormat)
+		}
+		if strings.TrimSpace(opts.TelemetryOutput) == "" {
+			return fmt.Errorf("--telemetry-output is required when telemetry is enabled")
+		}
+		if strings.TrimSpace(opts.TelemetryExperiment) == "" {
+			return fmt.Errorf("--telemetry-experiment-id is required when telemetry is enabled")
+		}
+	}
 
-	return opts, nil
+	if opts.ClearTargetState {
+		if opts.SyncMode != "oneshot" {
+			return fmt.Errorf("--clear-target-state requires --sync-mode=oneshot")
+		}
+		if strings.TrimSpace(opts.ServiceSelector) == "" {
+			return fmt.Errorf("--clear-target-state requires --service namespace/name")
+		}
+	}
+
+	return nil
 }
 
 func durationFromSeconds(seconds float64) time.Duration {
@@ -334,6 +444,25 @@ func parseServiceSelector(raw string) (*serviceSelector, error) {
 		return nil, fmt.Errorf("--service must use namespace/name")
 	}
 	return &serviceSelector{Namespace: parts[0], Name: parts[1]}, nil
+}
+
+func resolveTelemetrySelector(opts options) (*serviceSelector, error) {
+	if !opts.TelemetryEnable {
+		return nil, nil
+	}
+
+	rawService := strings.TrimSpace(opts.ServiceSelector)
+	rawTelemetry := strings.TrimSpace(opts.TelemetryService)
+	if rawService != "" && rawTelemetry != "" && rawService != rawTelemetry {
+		return nil, fmt.Errorf("--service and --telemetry-service must match when both are set")
+	}
+	if rawTelemetry == "" {
+		rawTelemetry = rawService
+	}
+	if rawTelemetry == "" {
+		return nil, fmt.Errorf("--telemetry-service or --service is required when telemetry is enabled")
+	}
+	return parseServiceSelector(rawTelemetry)
 }
 
 func loadKubeConfig() (*rest.Config, error) {
@@ -354,6 +483,9 @@ func openPinnedMaps(opts options) (*pinnedMaps, error) {
 		backendMapPin: opts.BackendMapPin,
 		rrStateMapPin: opts.RRStateMapPin,
 		configMapPin:  opts.ConfigMapPin,
+		ctMapPin:      opts.CTMapPin,
+		fwdCTMapPin:   opts.FwdCTMapPin,
+		statsMapPin:   opts.StatsMapPin,
 	}
 	if opts.DryRun {
 		return m, nil
@@ -375,6 +507,22 @@ func openPinnedMaps(opts options) (*pinnedMaps, error) {
 		m.Close()
 		return nil, fmt.Errorf("open config map: %w", err)
 	}
+	if m.ctMap, err = ebpf.LoadPinnedMap(opts.CTMapPin, nil); err != nil {
+		m.Close()
+		return nil, fmt.Errorf("open conntrack map: %w", err)
+	}
+	if m.fwdCTMap, err = ebpf.LoadPinnedMap(opts.FwdCTMapPin, nil); err != nil {
+		m.Close()
+		return nil, fmt.Errorf("open forward conntrack map: %w", err)
+	}
+	if m.statsMap, err = ebpf.LoadPinnedMap(opts.StatsMapPin, nil); err != nil {
+		m.Close()
+		return nil, fmt.Errorf("open stats map: %w", err)
+	}
+	if m.possibleCPUs, err = ebpf.PossibleCPU(); err != nil {
+		m.Close()
+		return nil, fmt.Errorf("detect possible cpus: %w", err)
+	}
 	return m, nil
 }
 
@@ -391,6 +539,56 @@ func (m *pinnedMaps) Close() {
 	if m.configMap != nil {
 		_ = m.configMap.Close()
 	}
+	if m.ctMap != nil {
+		_ = m.ctMap.Close()
+	}
+	if m.fwdCTMap != nil {
+		_ = m.fwdCTMap.Close()
+	}
+	if m.statsMap != nil {
+		_ = m.statsMap.Close()
+	}
+}
+
+func runSteadyState(ctx context.Context, ctrl *controller) error {
+	switch ctrl.opts.SyncMode {
+	case "oneshot":
+		return nil
+	case "poll", "watch":
+	default:
+		return fmt.Errorf("unsupported sync mode: %s", ctrl.opts.SyncMode)
+	}
+
+	workerCount := 1
+	errCh := make(chan error, 2)
+	go func() {
+		switch ctrl.opts.SyncMode {
+		case "poll":
+			errCh <- ctrl.runPoll(ctx)
+		case "watch":
+			errCh <- ctrl.runWatch(ctx)
+		}
+	}()
+
+	if ctrl.conntrackGCEnabled() {
+		workerCount++
+		go func() {
+			errCh <- ctrl.runConntrackGC(ctx)
+		}()
+	}
+	if ctrl.opts.TelemetryEnable {
+		workerCount++
+		go func() {
+			errCh <- ctrl.runTelemetry(ctx)
+		}()
+	}
+
+	for i := 0; i < workerCount; i++ {
+		if err := <-errCh; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (m *pinnedMaps) UpdateConfig(cfg deliveryConfig) error {
@@ -633,18 +831,54 @@ func (c *controller) runWatch(ctx context.Context) error {
 	}
 }
 
+func (c *controller) clearTargetState(reason string) error {
+	if !c.opts.ClearTargetState {
+		return nil
+	}
+
+	desiredEntries, err := c.desiredEntries()
+	if err != nil {
+		return err
+	}
+	if len(desiredEntries) == 0 {
+		return fmt.Errorf("%s: no desired target entries found", reason)
+	}
+
+	ids := make([]serviceID, 0, len(desiredEntries))
+	for id := range desiredEntries {
+		ids = append(ids, id)
+	}
+	sortServiceIDs(ids)
+
+	for _, id := range ids {
+		if err := c.maps.DeleteEntry(desiredEntries[id]); err != nil {
+			return err
+		}
+	}
+
+	log.Printf("%s: cleared %d target entrie(s)", reason, len(ids))
+	return nil
+}
+
 func (c *controller) reconcile(reason string) error {
 	config, err := c.currentDeliveryConfig()
 	if err != nil {
 		return err
 	}
-	if c.appliedConfig == nil || *c.appliedConfig != config {
+	c.stateMu.RLock()
+	appliedConfig := c.appliedConfig
+	appliedEntries := cloneAppliedEntries(c.appliedEntries)
+	c.stateMu.RUnlock()
+
+	if appliedConfig == nil || *appliedConfig != config {
 		log.Printf("%s: syncing delivery config", reason)
 		if err := c.maps.UpdateConfig(config); err != nil {
 			return err
 		}
 		cfg := config
+		c.stateMu.Lock()
 		c.appliedConfig = &cfg
+		c.stateMu.Unlock()
 	}
 
 	desiredEntries, err := c.desiredEntries()
@@ -652,23 +886,23 @@ func (c *controller) reconcile(reason string) error {
 		return err
 	}
 
-	removedIDs := sortedRemovedIDs(c.appliedEntries, desiredEntries)
-	upsertIDs := sortedChangedIDs(c.appliedEntries, desiredEntries)
+	removedIDs := sortedRemovedIDs(appliedEntries, desiredEntries)
+	upsertIDs := sortedChangedIDs(appliedEntries, desiredEntries)
 	unchanged := 0
 	for id, entry := range desiredEntries {
-		if old, ok := c.appliedEntries[id]; ok && old.equal(entry) {
+		if old, ok := appliedEntries[id]; ok && old.equal(entry) {
 			unchanged++
 		}
 	}
 
 	for _, id := range removedIDs {
-		if err := c.maps.DeleteEntry(c.appliedEntries[id]); err != nil {
+		if err := c.maps.DeleteEntry(appliedEntries[id]); err != nil {
 			return err
 		}
 	}
 
 	for _, id := range upsertIDs {
-		if old, ok := c.appliedEntries[id]; ok {
+		if old, ok := appliedEntries[id]; ok {
 			if err := c.maps.DeleteEntry(old); err != nil {
 				return err
 			}
@@ -693,7 +927,10 @@ func (c *controller) reconcile(reason string) error {
 		unchanged,
 	)
 
+	c.noteReconcile(len(upsertIDs), len(removedIDs))
+	c.stateMu.Lock()
 	c.appliedEntries = desiredEntries
+	c.stateMu.Unlock()
 	return nil
 }
 
@@ -718,6 +955,16 @@ func sortedChangedIDs(oldEntries, newEntries map[serviceID]nodePortEntry) []serv
 	}
 	sortServiceIDs(ids)
 	return ids
+}
+
+func cloneAppliedEntries(entries map[serviceID]nodePortEntry) map[serviceID]nodePortEntry {
+	cloned := make(map[serviceID]nodePortEntry, len(entries))
+	for id, entry := range entries {
+		backends := append([]backend(nil), entry.Backends...)
+		entry.Backends = backends
+		cloned[id] = entry
+	}
+	return cloned
 }
 
 func sortServiceIDs(ids []serviceID) {
@@ -809,11 +1056,17 @@ func (c *controller) desiredEntries() (map[serviceID]nodePortEntry, error) {
 		return nil, fmt.Errorf("list endpointslices: %w", err)
 	}
 
-	nodeName, err := resolveNodeName(c.nodeName, nodes)
+	c.stateMu.RLock()
+	currentNodeName := c.nodeName
+	c.stateMu.RUnlock()
+
+	nodeName, err := resolveNodeName(currentNodeName, nodes)
 	if err != nil {
 		return nil, err
 	}
+	c.stateMu.Lock()
 	c.nodeName = nodeName
+	c.stateMu.Unlock()
 
 	nodeIPs := buildNodeInternalIPs(nodes)
 	nodeIP := nodeIPs[nodeName]

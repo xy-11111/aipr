@@ -4,3 +4,5 @@
 __pycache__/
 *.pyc
 bin/
+.venv-phase4/
+artifacts/phase4_baselines_v1/

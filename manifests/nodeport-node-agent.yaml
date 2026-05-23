@@ -54,6 +54,15 @@ data:
   NODEPORT_SERVICE_SELECTOR: ""
   NODEPORT_SYNC_MODE: "watch"
   NODEPORT_SYNC_POLL_INTERVAL: "5"
+  NODEPORT_CT_ENTRY_TIMEOUT: "10m"
+  NODEPORT_CT_GC_INTERVAL: "30s"
+  NODEPORT_TELEMETRY_ENABLE: "0"
+  NODEPORT_TELEMETRY_WINDOW: "1s"
+  NODEPORT_TELEMETRY_FORMAT: "csv"
+  NODEPORT_TELEMETRY_OUTPUT: "/var/log/ebpf-nodeport/telemetry"
+  NODEPORT_TELEMETRY_EXPERIMENT_ID: "default"
+  NODEPORT_TELEMETRY_EVENTS_FILE: ""
+  NODEPORT_TELEMETRY_SERVICE: ""
   NODEPORT_EXTRA_ARGS: ""
   BPF_CFLAGS: ""
   PRE_CLEANUP: "1"
@@ -77,12 +86,22 @@ spec:
       hostNetwork: true
       hostPID: true
       dnsPolicy: ClusterFirstWithHostNet
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-worker1
+                      - k8s-worker2
       terminationGracePeriodSeconds: 20
       tolerations:
         - operator: Exists
       containers:
         - name: agent
-          image: docker.io/library/ebpf-nodeport-agent:snat-v1
+          image: docker.io/library/ebpf-nodeport-agent:phase2-local
           imagePullPolicy: IfNotPresent
           command:
             - /workspace/bin/nodeport-agent
@@ -98,11 +117,23 @@ spec:
             privileged: true
             allowPrivilegeEscalation: true
           volumeMounts:
+            - name: agent-bin
+              mountPath: /workspace/bin
             - name: bpffs
               mountPath: /sys/fs/bpf
               mountPropagation: Bidirectional
+            - name: telemetry-output
+              mountPath: /var/log/ebpf-nodeport
       volumes:
+        - name: agent-bin
+          hostPath:
+            path: /opt/ebpf-nodeport/bin
+            type: DirectoryOrCreate
         - name: bpffs
           hostPath:
             path: /sys/fs/bpf
+            type: DirectoryOrCreate
+        - name: telemetry-output
+          hostPath:
+            path: /var/log/ebpf-nodeport
             type: DirectoryOrCreate

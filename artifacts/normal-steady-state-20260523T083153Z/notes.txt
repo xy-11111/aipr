@@ -1,0 +1,15 @@
+experiment_id=normal-steady-state-20260523T083153Z
+created_at_utc=20260523T083153Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+start_ms=1779525116336
+collector_started_k8s-worker1=1
+collector_log_k8s-worker1=/var/log/ebpf-nodeport/telemetry-runtime/normal-steady-state-20260523T083153Z/k8s-worker1/collector.log
+collector_started_k8s-worker2=1
+collector_log_k8s-worker2=/var/log/ebpf-nodeport/telemetry-runtime/normal-steady-state-20260523T083153Z/k8s-worker2/collector.log
+traffic_pid=2903693
+end_ms=1779525152265
+agent_pod_k8s-worker1=ebpf-nodeport-agent-79bjl
+agent_pod_k8s-worker2=ebpf-nodeport-agent-fdqt5

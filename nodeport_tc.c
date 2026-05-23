@@ -40,7 +40,14 @@ enum stats_index {
     STAT_CT_LOOKUP_MISS = 8,
     STAT_RESPONSE_REWRITE = 9,
     STAT_SAME_NODE_SKIP = 10,
-    STAT_COUNT = 11,
+    STAT_FWD_CT_HIT = 11,
+    STAT_NEW_CONN = 12,
+    STAT_MAP_MISS = 13,
+    STAT_REWRITE_FAIL = 14,
+    STAT_REDIRECT_OK = 15,
+    STAT_REDIRECT_FAIL = 16,
+    STAT_FALLBACK_PASS = 17,
+    STAT_COUNT = 18,
 };
 
 struct nodeport_key {
@@ -172,6 +179,44 @@ static __always_inline void bump_stat(__u32 index)
     value = bpf_map_lookup_elem(&nodeport_stats_map, &index);
     if (value)
         *value += 1;
+}
+
+static __always_inline bool is_snat_port(__be16 port)
+{
+    __u16 host_port = bpf_ntohs(port);
+
+    return host_port >= NODEPORT_SNAT_MIN && host_port <= NODEPORT_SNAT_MAX;
+}
+
+static __always_inline int update_conntrack_entry(
+    const struct nodeport_ct_key *ct_key,
+    __be32 client_ip,
+    __be32 frontend_ip,
+    __be16 client_port,
+    __be16 frontend_port)
+{
+    struct nodeport_ct_value ct_value = {
+        .client_ip = client_ip,
+        .frontend_ip = frontend_ip,
+        .client_port = client_port,
+        .frontend_port = frontend_port,
+        .last_seen_ns = bpf_ktime_get_ns(),
+    };
+
+    return bpf_map_update_elem(&nodeport_ct_map, ct_key, &ct_value, BPF_ANY);
+}
+
+static __always_inline int redirect_or_fallback(__u32 ifindex)
+{
+    if (ifindex > 0) {
+        bump_stat(STAT_REDIRECT_OK);
+        bpf_redirect_neigh(ifindex, 0, 0, 0);
+        return TC_ACT_REDIRECT;
+    }
+
+    bump_stat(STAT_REDIRECT_FAIL);
+    bump_stat(STAT_FALLBACK_PASS);
+    return TC_ACT_OK;
 }
 
 static __always_inline int parse_tcp_packet(
@@ -371,9 +416,9 @@ static __always_inline int handle_request(
     const struct nodeport_value *service_meta;
     const struct nodeport_config *config;
     const struct nodeport_fwd_ct_value *fwd_ct;
+    struct nodeport_value service_state = {};
     struct nodeport_backend_value backend = {};
     struct nodeport_ct_key ct_key = {};
-    struct nodeport_ct_value ct_value = {};
     struct nodeport_fwd_ct_key fwd_key = {};
     struct nodeport_fwd_ct_value fwd_value = {};
     __u32 config_key = 0;
@@ -383,6 +428,7 @@ static __always_inline int handle_request(
     service_meta = bpf_map_lookup_elem(&nodeport_service_map, &service);
     if (!service_meta)
         return -1;
+    service_state = *service_meta;
 
     bump_stat(STAT_NODEPORT_HIT);
     config = bpf_map_lookup_elem(&nodeport_config_map, &config_key);
@@ -395,21 +441,34 @@ static __always_inline int handle_request(
 
     fwd_ct = bpf_map_lookup_elem(&nodeport_fwd_ct_map, &fwd_key);
     if (fwd_ct) {
+        struct nodeport_fwd_ct_value fwd_state = *fwd_ct;
+        struct nodeport_ct_key existing_ct_key = {
+            .backend_ip = fwd_state.backend_ip,
+            .node_ip = fwd_state.snat_ip,
+            .backend_port = fwd_state.backend_port,
+            .snat_port = fwd_state.snat_port,
+            .proto = IPPROTO_TCP,
+        };
+
+        bump_stat(STAT_FWD_CT_HIT);
+        update_conntrack_entry(&existing_ct_key, ip->saddr, service.address, tcp->source, service.port);
+
         if (rewrite_tuple(skb, data, ip, tcp,
-                          fwd_ct->snat_ip, fwd_ct->backend_ip,
-                          fwd_ct->snat_port, fwd_ct->backend_port) == 0) {
+                          fwd_state.snat_ip, fwd_state.backend_ip,
+                          fwd_state.snat_port, fwd_state.backend_port) == 0) {
             bump_stat(STAT_REQUEST_REWRITE);
-            if (fwd_ct->egress_ifindex > 0) {
-                bpf_redirect_neigh(fwd_ct->egress_ifindex, 0, 0, 0);
-                return TC_ACT_REDIRECT;
-            }
+            return redirect_or_fallback(fwd_state.egress_ifindex);
         }
 
+        bump_stat(STAT_REWRITE_FAIL);
+        bump_stat(STAT_FALLBACK_PASS);
         return TC_ACT_OK;
     }
 
-    if (select_backend(&service, service_meta, &backend) < 0) {
+    if (select_backend(&service, &service_state, &backend) < 0) {
         bump_stat(STAT_BACKEND_LOOKUP_MISS);
+        bump_stat(STAT_MAP_MISS);
+        bump_stat(STAT_FALLBACK_PASS);
         return 0;
     }
 
@@ -423,35 +482,38 @@ static __always_inline int handle_request(
     }
 
     ct_key.backend_ip = backend.address;
-    ct_key.node_ip = service_meta->snat_ip;
+    ct_key.node_ip = service_state.snat_ip;
     ct_key.backend_port = backend.port;
     ct_key.snat_port = snat_port;
     ct_key.proto = IPPROTO_TCP;
 
-    ct_value.client_ip = ip->saddr;
-    ct_value.frontend_ip = service.address;
-    ct_value.client_port = tcp->source;
-    ct_value.frontend_port = service.port;
-    ct_value.last_seen_ns = bpf_ktime_get_ns();
-
-    if (bpf_map_update_elem(&nodeport_ct_map, &ct_key, &ct_value, BPF_ANY) == 0)
-        bump_stat(STAT_SNAT_INSTALL);
+    if (update_conntrack_entry(&ct_key, ip->saddr, service.address, tcp->source, service.port) < 0) {
+        bump_stat(STAT_MAP_MISS);
+        bump_stat(STAT_FALLBACK_PASS);
+        return TC_ACT_OK;
+    }
+    bump_stat(STAT_SNAT_INSTALL);
 
     fwd_value.backend_ip = backend.address;
-    fwd_value.snat_ip = service_meta->snat_ip;
+    fwd_value.snat_ip = service_state.snat_ip;
     fwd_value.backend_port = backend.port;
     fwd_value.snat_port = snat_port;
     fwd_value.egress_ifindex = egress_ifindex;
-    bpf_map_update_elem(&nodeport_fwd_ct_map, &fwd_key, &fwd_value, BPF_ANY);
+    if (bpf_map_update_elem(&nodeport_fwd_ct_map, &fwd_key, &fwd_value, BPF_ANY) < 0) {
+        bpf_map_delete_elem(&nodeport_ct_map, &ct_key);
+        bump_stat(STAT_MAP_MISS);
+        bump_stat(STAT_FALLBACK_PASS);
+        return TC_ACT_OK;
+    }
+    bump_stat(STAT_NEW_CONN);
 
-    if (rewrite_tuple(skb, data, ip, tcp, service_meta->snat_ip, backend.address, snat_port, backend.port) == 0) {
+    if (rewrite_tuple(skb, data, ip, tcp, service_state.snat_ip, backend.address, snat_port, backend.port) == 0) {
         bump_stat(STAT_REQUEST_REWRITE);
-        if (egress_ifindex > 0) {
-            bpf_redirect_neigh(egress_ifindex, 0, 0, 0);
-            return TC_ACT_REDIRECT;
-        }
+        return redirect_or_fallback(egress_ifindex);
     }
 
+    bump_stat(STAT_REWRITE_FAIL);
+    bump_stat(STAT_FALLBACK_PASS);
     return TC_ACT_OK;
 }
 
@@ -470,30 +532,34 @@ static __always_inline int handle_response(
     };
     const struct nodeport_ct_value *ct_value;
     const struct nodeport_config *config;
-    struct nodeport_ct_value updated;
+    struct nodeport_ct_value ct_state = {};
     __u32 config_key = 0;
 
     ct_value = bpf_map_lookup_elem(&nodeport_ct_map, &ct_key);
-    if (!ct_value)
+    if (!ct_value) {
+        if (is_snat_port(tcp->dest)) {
+            bump_stat(STAT_CT_LOOKUP_MISS);
+            bump_stat(STAT_MAP_MISS);
+            bump_stat(STAT_FALLBACK_PASS);
+        }
         return -1;
+    }
+    ct_state = *ct_value;
 
-    updated = *ct_value;
-    updated.last_seen_ns = bpf_ktime_get_ns();
-    bpf_map_update_elem(&nodeport_ct_map, &ct_key, &updated, BPF_ANY);
+    update_conntrack_entry(&ct_key, ct_state.client_ip, ct_state.frontend_ip, ct_state.client_port, ct_state.frontend_port);
+    config = bpf_map_lookup_elem(&nodeport_config_map, &config_key);
 
     bump_stat(STAT_REVNAT_HIT);
 
     if (rewrite_tuple(skb, data, ip, tcp,
-                      updated.frontend_ip, updated.client_ip,
-                      updated.frontend_port, updated.client_port) == 0)
+                      ct_state.frontend_ip, ct_state.client_ip,
+                      ct_state.frontend_port, ct_state.client_port) == 0) {
         bump_stat(STAT_RESPONSE_REWRITE);
-
-    config = bpf_map_lookup_elem(&nodeport_config_map, &config_key);
-    if (config && config->external_ifindex > 0) {
-        bpf_redirect_neigh(config->external_ifindex, 0, 0, 0);
-        return TC_ACT_REDIRECT;
+        return redirect_or_fallback(config ? config->external_ifindex : 0);
     }
 
+    bump_stat(STAT_REWRITE_FAIL);
+    bump_stat(STAT_FALLBACK_PASS);
     return TC_ACT_OK;
 }
 
@@ -519,7 +585,6 @@ int nodeport_tc(struct __sk_buff *skb)
     if (action >= 0)
         return action;
 
-    bump_stat(STAT_CT_LOOKUP_MISS);
     return TC_ACT_OK;
 }
 

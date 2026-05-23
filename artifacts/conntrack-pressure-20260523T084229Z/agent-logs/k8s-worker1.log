@@ -1,0 +1,90 @@
+2026/05/23 08:30:25 resolved delivery profile: external=enp1s0 local=cni0 remote=flannel.1 mode=encap
+2026/05/23 08:30:25 pre-cleaning existing NodePort eBPF state
+2026/05/23 08:30:25 + tc filter del dev enp1s0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:30:25 + tc filter del dev enp1s0 egress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:30:25 + tc filter del dev cni0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:30:25 + tc filter del dev flannel.1 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:30:25 cleaned nodeport tc state under: /sys/fs/bpf/nodeport_tc
+2026/05/23 08:30:25 attaching NodePort tc program on outer=enp1s0 inner=cni0,flannel.1 attach_veths=false
+2026/05/23 08:30:25 + mkdir -p /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:30:25 + rm -f /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 + clang -O2 -g -target bpf -D__TARGET_ARCH_x86 -I/usr/include/x86_64-linux-gnu -c /workspace/nodeport_tc.c -o /tmp/nodeport_tc.o
+2026/05/23 08:30:25 + bpftool prog load /tmp/nodeport_tc.o /sys/fs/bpf/nodeport_tc/prog type classifier pinmaps /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:30:25 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 08:30:25 + tc filter replace dev enp1s0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 08:30:25 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 08:30:25 + tc filter replace dev enp1s0 egress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 08:30:25 + tc qdisc replace dev cni0 clsact
+2026/05/23 08:30:25 + tc filter replace dev cni0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 + echo 1 > /proc/sys/net/ipv4/conf/cni0/accept_local
+2026/05/23 08:30:25 + tc qdisc replace dev flannel.1 clsact
+2026/05/23 08:30:25 + tc filter replace dev flannel.1 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 + echo 1 > /proc/sys/net/ipv4/conf/flannel.1/accept_local
+2026/05/23 08:30:25 program pinned at: /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:30:25 maps pinned under: /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:30:25 outer iface: enp1s0 ingress+egress
+2026/05/23 08:30:25 inner ingress ifaces: cni0,flannel.1
+2026/05/23 08:30:25 veth ingress ifaces: disabled
+2026/05/23 08:30:25 starting NodePort syncer with mode=watch
+2026/05/23 08:30:25 sync mode=watch
+2026/05/23 08:30:25 node name: k8s-worker1
+2026/05/23 08:30:25 initial sync: syncing delivery config
+2026/05/23 08:30:25 updating delivery config: external=2 local=5 remote=4 mode=1
+2026/05/23 08:30:25 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 08:30:25 initial sync: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:30:26 watch: received 20 event(s); reconciling
+2026/05/23 08:30:26 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:30:31 watch: received 1 event(s); reconciling
+2026/05/23 08:30:31 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:30:32 watch: received 1 event(s); reconciling
+2026/05/23 08:30:32 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:33:30 watch: received 1 event(s); reconciling
+2026/05/23 08:33:30 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:33:54 watch: received 1 event(s); reconciling
+2026/05/23 08:33:54 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:34:25 watch: received 1 event(s); reconciling
+2026/05/23 08:34:25 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 08:34:25 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 08:34:25 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 08:34:56 watch: received 1 event(s); reconciling
+2026/05/23 08:34:56 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:34:58 watch: received 1 event(s); reconciling
+2026/05/23 08:34:58 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:34:59 watch: received 2 event(s); reconciling
+2026/05/23 08:34:59 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 08:34:59 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=1
+2026/05/23 08:34:59 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 08:35:07 watch: received 1 event(s); reconciling
+2026/05/23 08:35:07 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:35:12 watch: received 1 event(s); reconciling
+2026/05/23 08:35:12 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:35:31 watch: received 1 event(s); reconciling
+2026/05/23 08:35:31 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:35:34 watch: received 2 event(s); reconciling
+2026/05/23 08:35:34 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080
+2026/05/23 08:35:34 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.202:30080 backends=2
+2026/05/23 08:35:34 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:35:39 watch: received 1 event(s); reconciling
+2026/05/23 08:35:39 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:35:40 watch: received 1 event(s); reconciling
+2026/05/23 08:35:40 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:38:36 watch: received 1 event(s); reconciling
+2026/05/23 08:38:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:39:01 watch: received 1 event(s); reconciling
+2026/05/23 08:39:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:40:45 watch: received 1 event(s); reconciling
+2026/05/23 08:40:45 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:40:46 watch: received 1 event(s); reconciling
+2026/05/23 08:40:46 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:42:25 conntrack gc: active_ct=698 active_fwd=698 deleted_ct=92 deleted_fwd=92
+2026/05/23 08:42:56 conntrack gc: active_ct=5136 active_fwd=5136 deleted_ct=27 deleted_fwd=36

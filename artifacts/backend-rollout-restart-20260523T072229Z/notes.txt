@@ -1,0 +1,10 @@
+experiment_id=backend-rollout-restart-20260523T072229Z
+created_at_utc=20260523T072254Z
+target_node_name=k8s-worker1
+target_node_ip=192.168.1.202
+experiment_nodes=k8s-worker1,k8s-worker2
+target_url=http://192.168.1.202:30080/
+traffic_pid=2737803
+rollout_restart_start_ms=1779520982981
+rollout_restart_end_ms=1779521053702
+experiment_end_ms=1779521060248

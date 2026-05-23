@@ -1,7 +1,6 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
     bash \
@@ -14,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     libc6-dev \
     libbpf-dev \
     netcat-openbsd \
-    python3 \
     strace \
     sudo \
     util-linux \

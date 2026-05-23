@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"nodeport-echo","namespace":"ebpf-nodeport-test"},"spec":{"externalTrafficPolicy":"Cluster","ports":[{"name":"http","nodePort":30080,"port":80,"protocol":"TCP","targetPort":8080}],"selector":{"app":"nodeport-echo"},"type":"NodePort"}}
+  creationTimestamp: "2026-05-23T11:54:47Z"
+  name: nodeport-echo
+  namespace: ebpf-nodeport-test
+  resourceVersion: "9539239"
+  uid: a7148db6-0a7a-4cc3-bf78-0b952c124b5e
+spec:
+  clusterIP: 10.109.60.73
+  clusterIPs:
+  - 10.109.60.73
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    nodePort: 30080
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: nodeport-echo
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

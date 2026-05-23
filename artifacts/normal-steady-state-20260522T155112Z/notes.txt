@@ -1,0 +1,6 @@
+experiment_id=normal-steady-state-20260522T155112Z
+created_at_utc=20260522T155201Z
+target_url=http://192.168.1.201:30080/
+start_ms=1779465122126
+traffic_pid=1905932
+end_ms=1779465154030

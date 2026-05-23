@@ -1,0 +1,445 @@
+2026/05/23 08:37:47 resolved delivery profile: external=enp1s0 local=cni0 remote=flannel.1 mode=encap
+2026/05/23 08:37:47 pre-cleaning existing NodePort eBPF state
+2026/05/23 08:37:47 + tc filter del dev enp1s0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:37:47 + tc filter del dev enp1s0 egress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:37:47 + tc filter del dev cni0 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:37:47 + tc filter del dev flannel.1 ingress pref 10 handle 10 bpf direct-action
+Error: Cannot find specified filter chain.
+We have an error talking to the kernel
+2026/05/23 08:37:47 cleaned nodeport tc state under: /sys/fs/bpf/nodeport_tc
+2026/05/23 08:37:47 attaching NodePort tc program on outer=enp1s0 inner=cni0,flannel.1 attach_veths=false
+2026/05/23 08:37:47 + mkdir -p /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:37:47 + rm -f /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 + clang -O2 -g -target bpf -D__TARGET_ARCH_x86 -I/usr/include/x86_64-linux-gnu -c /workspace/nodeport_tc.c -o /tmp/nodeport_tc.o
+2026/05/23 08:37:47 + bpftool prog load /tmp/nodeport_tc.o /sys/fs/bpf/nodeport_tc/prog type classifier pinmaps /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:37:47 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 08:37:47 + tc filter replace dev enp1s0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 08:37:47 + tc qdisc replace dev enp1s0 clsact
+2026/05/23 08:37:47 + tc filter replace dev enp1s0 egress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 + echo 1 > /proc/sys/net/ipv4/conf/enp1s0/accept_local
+2026/05/23 08:37:47 + tc qdisc replace dev cni0 clsact
+2026/05/23 08:37:47 + tc filter replace dev cni0 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 + echo 1 > /proc/sys/net/ipv4/conf/cni0/accept_local
+2026/05/23 08:37:47 + tc qdisc replace dev flannel.1 clsact
+2026/05/23 08:37:47 + tc filter replace dev flannel.1 ingress pref 10 handle 10 bpf direct-action object-pinned /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 + echo 1 > /proc/sys/net/ipv4/conf/flannel.1/accept_local
+2026/05/23 08:37:47 program pinned at: /sys/fs/bpf/nodeport_tc/prog
+2026/05/23 08:37:47 maps pinned under: /sys/fs/bpf/nodeport_tc/maps
+2026/05/23 08:37:47 outer iface: enp1s0 ingress+egress
+2026/05/23 08:37:47 inner ingress ifaces: cni0,flannel.1
+2026/05/23 08:37:47 veth ingress ifaces: disabled
+2026/05/23 08:37:47 starting NodePort syncer with mode=watch
+2026/05/23 08:37:47 sync mode=watch
+2026/05/23 08:37:47 node name: k8s-worker2
+2026/05/23 08:37:47 initial sync: syncing delivery config
+2026/05/23 08:37:47 updating delivery config: external=2 local=5 remote=4 mode=1
+2026/05/23 08:37:47 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 08:37:47 initial sync: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:37:47 watch: received 20 event(s); reconciling
+2026/05/23 08:37:47 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:38:36 watch: received 1 event(s); reconciling
+2026/05/23 08:38:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:39:01 watch: received 1 event(s); reconciling
+2026/05/23 08:39:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:40:45 watch: received 1 event(s); reconciling
+2026/05/23 08:40:45 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:40:46 watch: received 1 event(s); reconciling
+2026/05/23 08:40:46 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:43:39 watch: received 1 event(s); reconciling
+2026/05/23 08:43:39 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 08:43:39 watch reconcile: services=0 backends=0 upserted=0 removed=1 unchanged=0
+2026/05/23 08:43:39 watch: received 1 event(s); reconciling
+2026/05/23 08:43:39 watch reconcile: services=0 backends=0 upserted=0 removed=0 unchanged=0
+2026/05/23 08:43:40 watch: received 2 event(s); reconciling
+2026/05/23 08:43:40 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 08:43:40 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:43:42 watch: received 1 event(s); reconciling
+2026/05/23 08:43:42 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:44:07 watch: received 1 event(s); reconciling
+2026/05/23 08:44:07 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:44:23 watch: received 1 event(s); reconciling
+2026/05/23 08:44:23 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 08:44:23 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 08:44:23 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 08:44:54 watch: received 1 event(s); reconciling
+2026/05/23 08:44:54 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:44:57 watch: received 2 event(s); reconciling
+2026/05/23 08:44:57 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 08:44:57 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 08:44:57 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:45:00 watch: received 1 event(s); reconciling
+2026/05/23 08:45:00 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 08:45:00 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 08:45:00 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 08:45:31 watch: received 1 event(s); reconciling
+2026/05/23 08:45:31 watch reconcile: services=1 backends=1 upserted=0 removed=0 unchanged=1
+2026/05/23 08:45:34 watch: received 2 event(s); reconciling
+2026/05/23 08:45:34 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 08:45:34 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 08:45:34 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 08:45:52 watch: received 1 event(s); reconciling
+2026/05/23 08:45:52 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:45:53 watch: received 1 event(s); reconciling
+2026/05/23 08:45:53 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:48:49 watch: received 1 event(s); reconciling
+2026/05/23 08:48:49 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:49:13 watch: received 1 event(s); reconciling
+2026/05/23 08:49:13 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:51:00 watch: received 2 event(s); reconciling
+2026/05/23 08:51:00 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:53:55 watch: received 1 event(s); reconciling
+2026/05/23 08:53:55 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:54:18 watch: received 1 event(s); reconciling
+2026/05/23 08:54:18 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:56:06 watch: received 2 event(s); reconciling
+2026/05/23 08:56:06 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:59:01 watch: received 1 event(s); reconciling
+2026/05/23 08:59:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 08:59:25 watch: received 1 event(s); reconciling
+2026/05/23 08:59:25 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:01:12 watch: received 1 event(s); reconciling
+2026/05/23 09:01:12 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:01:12 watch: received 1 event(s); reconciling
+2026/05/23 09:01:12 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:04:07 watch: received 1 event(s); reconciling
+2026/05/23 09:04:07 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:04:30 watch: received 1 event(s); reconciling
+2026/05/23 09:04:30 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:06:19 watch: received 1 event(s); reconciling
+2026/05/23 09:06:19 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:06:19 watch: received 1 event(s); reconciling
+2026/05/23 09:06:19 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:09:13 watch: received 1 event(s); reconciling
+2026/05/23 09:09:13 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:09:36 watch: received 1 event(s); reconciling
+2026/05/23 09:09:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:11:25 watch: received 1 event(s); reconciling
+2026/05/23 09:11:25 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:11:26 watch: received 1 event(s); reconciling
+2026/05/23 09:11:26 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:14:18 watch: received 1 event(s); reconciling
+2026/05/23 09:14:18 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:14:43 watch: received 1 event(s); reconciling
+2026/05/23 09:14:43 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:16:30 watch: received 1 event(s); reconciling
+2026/05/23 09:16:30 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:16:32 watch: received 1 event(s); reconciling
+2026/05/23 09:16:32 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:19:24 watch: received 1 event(s); reconciling
+2026/05/23 09:19:24 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:19:51 watch: received 1 event(s); reconciling
+2026/05/23 09:19:51 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:21:36 watch: received 1 event(s); reconciling
+2026/05/23 09:21:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:21:37 watch: received 1 event(s); reconciling
+2026/05/23 09:21:38 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:24:30 watch: received 1 event(s); reconciling
+2026/05/23 09:24:30 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:24:56 watch: received 1 event(s); reconciling
+2026/05/23 09:24:56 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:26:43 watch: received 1 event(s); reconciling
+2026/05/23 09:26:43 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:26:44 watch: received 1 event(s); reconciling
+2026/05/23 09:26:44 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:29:36 watch: received 1 event(s); reconciling
+2026/05/23 09:29:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:30:03 watch: received 1 event(s); reconciling
+2026/05/23 09:30:03 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:31:50 watch: received 1 event(s); reconciling
+2026/05/23 09:31:50 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:31:52 watch: received 1 event(s); reconciling
+2026/05/23 09:31:52 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:34:43 watch: received 1 event(s); reconciling
+2026/05/23 09:34:43 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:35:09 watch: received 1 event(s); reconciling
+2026/05/23 09:35:09 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:36:57 watch: received 1 event(s); reconciling
+2026/05/23 09:36:57 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:36:57 watch: received 1 event(s); reconciling
+2026/05/23 09:36:57 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:39:48 watch: received 1 event(s); reconciling
+2026/05/23 09:39:48 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:40:16 watch: received 1 event(s); reconciling
+2026/05/23 09:40:16 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:42:03 watch: received 2 event(s); reconciling
+2026/05/23 09:42:03 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:44:54 watch: received 1 event(s); reconciling
+2026/05/23 09:44:54 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:45:24 watch: received 1 event(s); reconciling
+2026/05/23 09:45:24 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:47:10 watch: received 1 event(s); reconciling
+2026/05/23 09:47:10 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:47:10 watch: received 1 event(s); reconciling
+2026/05/23 09:47:10 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:50:01 watch: received 1 event(s); reconciling
+2026/05/23 09:50:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:50:31 watch: received 1 event(s); reconciling
+2026/05/23 09:50:31 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:52:16 watch: received 1 event(s); reconciling
+2026/05/23 09:52:16 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:52:17 watch: received 1 event(s); reconciling
+2026/05/23 09:52:17 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:55:06 watch: received 1 event(s); reconciling
+2026/05/23 09:55:06 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:55:37 watch: received 1 event(s); reconciling
+2026/05/23 09:55:37 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:57:22 watch: received 1 event(s); reconciling
+2026/05/23 09:57:22 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 09:57:23 watch: received 1 event(s); reconciling
+2026/05/23 09:57:23 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:00:13 watch: received 1 event(s); reconciling
+2026/05/23 10:00:13 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:00:42 watch: received 1 event(s); reconciling
+2026/05/23 10:00:42 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:02:29 watch: received 1 event(s); reconciling
+2026/05/23 10:02:29 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:02:29 watch: received 1 event(s); reconciling
+2026/05/23 10:02:29 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:05:19 watch: received 1 event(s); reconciling
+2026/05/23 10:05:19 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:05:49 watch: received 1 event(s); reconciling
+2026/05/23 10:05:49 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:07:34 watch: received 1 event(s); reconciling
+2026/05/23 10:07:34 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:07:35 watch: received 1 event(s); reconciling
+2026/05/23 10:07:35 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:10:25 watch: received 1 event(s); reconciling
+2026/05/23 10:10:25 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:10:55 watch: received 1 event(s); reconciling
+2026/05/23 10:10:55 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:12:42 watch: received 1 event(s); reconciling
+2026/05/23 10:12:42 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:12:43 watch: received 1 event(s); reconciling
+2026/05/23 10:12:43 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:15:33 watch: received 1 event(s); reconciling
+2026/05/23 10:15:33 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:16:02 watch: received 1 event(s); reconciling
+2026/05/23 10:16:02 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:17:48 watch: received 1 event(s); reconciling
+2026/05/23 10:17:48 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:17:49 watch: received 1 event(s); reconciling
+2026/05/23 10:17:49 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:20:40 watch: received 1 event(s); reconciling
+2026/05/23 10:20:40 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:21:08 watch: received 1 event(s); reconciling
+2026/05/23 10:21:08 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:22:54 watch: received 1 event(s); reconciling
+2026/05/23 10:22:54 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:22:56 watch: received 1 event(s); reconciling
+2026/05/23 10:22:56 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:25:47 watch: received 1 event(s); reconciling
+2026/05/23 10:25:47 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:26:14 watch: received 1 event(s); reconciling
+2026/05/23 10:26:14 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:28:02 watch: received 1 event(s); reconciling
+2026/05/23 10:28:02 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:28:02 watch: received 1 event(s); reconciling
+2026/05/23 10:28:02 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:30:53 watch: received 1 event(s); reconciling
+2026/05/23 10:30:53 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:31:21 watch: received 1 event(s); reconciling
+2026/05/23 10:31:21 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:33:07 watch: received 1 event(s); reconciling
+2026/05/23 10:33:07 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:33:08 watch: received 1 event(s); reconciling
+2026/05/23 10:33:08 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:35:59 watch: received 1 event(s); reconciling
+2026/05/23 10:35:59 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:36:27 watch: received 1 event(s); reconciling
+2026/05/23 10:36:27 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:38:13 watch: received 1 event(s); reconciling
+2026/05/23 10:38:13 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:38:14 watch: received 1 event(s); reconciling
+2026/05/23 10:38:14 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:41:04 watch: received 1 event(s); reconciling
+2026/05/23 10:41:04 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:41:32 watch: received 1 event(s); reconciling
+2026/05/23 10:41:32 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:43:21 watch: received 1 event(s); reconciling
+2026/05/23 10:43:21 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:43:22 watch: received 1 event(s); reconciling
+2026/05/23 10:43:22 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:46:10 watch: received 1 event(s); reconciling
+2026/05/23 10:46:10 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:46:38 watch: received 1 event(s); reconciling
+2026/05/23 10:46:38 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:48:27 watch: received 1 event(s); reconciling
+2026/05/23 10:48:27 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:48:29 watch: received 1 event(s); reconciling
+2026/05/23 10:48:29 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:51:16 watch: received 1 event(s); reconciling
+2026/05/23 10:51:16 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:51:45 watch: received 1 event(s); reconciling
+2026/05/23 10:51:45 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:53:33 watch: received 1 event(s); reconciling
+2026/05/23 10:53:33 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:53:36 watch: received 1 event(s); reconciling
+2026/05/23 10:53:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:56:24 watch: received 1 event(s); reconciling
+2026/05/23 10:56:24 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:56:51 watch: received 1 event(s); reconciling
+2026/05/23 10:56:51 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:58:40 watch: received 1 event(s); reconciling
+2026/05/23 10:58:40 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 10:58:42 watch: received 1 event(s); reconciling
+2026/05/23 10:58:42 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:01:30 watch: received 1 event(s); reconciling
+2026/05/23 11:01:30 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:01:58 watch: received 1 event(s); reconciling
+2026/05/23 11:01:58 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:03:46 watch: received 1 event(s); reconciling
+2026/05/23 11:03:46 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:03:48 watch: received 1 event(s); reconciling
+2026/05/23 11:03:48 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:06:36 watch: received 1 event(s); reconciling
+2026/05/23 11:06:36 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:07:05 watch: received 1 event(s); reconciling
+2026/05/23 11:07:05 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:08:53 watch: received 1 event(s); reconciling
+2026/05/23 11:08:53 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:08:55 watch: received 1 event(s); reconciling
+2026/05/23 11:08:55 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:11:44 watch: received 1 event(s); reconciling
+2026/05/23 11:11:44 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:12:12 watch: received 1 event(s); reconciling
+2026/05/23 11:12:12 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:14:00 watch: received 1 event(s); reconciling
+2026/05/23 11:14:00 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:14:01 watch: received 1 event(s); reconciling
+2026/05/23 11:14:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:16:17 conntrack gc: active_ct=0 active_fwd=0 deleted_ct=1 deleted_fwd=1
+2026/05/23 11:16:51 watch: received 1 event(s); reconciling
+2026/05/23 11:16:51 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:17:19 watch: received 1 event(s); reconciling
+2026/05/23 11:17:19 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:19:06 watch: received 1 event(s); reconciling
+2026/05/23 11:19:06 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:19:09 watch: received 1 event(s); reconciling
+2026/05/23 11:19:09 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:21:58 watch: received 1 event(s); reconciling
+2026/05/23 11:21:58 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:22:25 watch: received 1 event(s); reconciling
+2026/05/23 11:22:25 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:24:12 watch: received 1 event(s); reconciling
+2026/05/23 11:24:12 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:24:13 watch: received 1 event(s); reconciling
+2026/05/23 11:24:13 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:27:04 watch: received 1 event(s); reconciling
+2026/05/23 11:27:04 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:27:32 watch: received 1 event(s); reconciling
+2026/05/23 11:27:32 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:29:19 watch: received 1 event(s); reconciling
+2026/05/23 11:29:19 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:29:20 watch: received 1 event(s); reconciling
+2026/05/23 11:29:20 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:32:10 watch: received 1 event(s); reconciling
+2026/05/23 11:32:10 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:32:38 watch: received 1 event(s); reconciling
+2026/05/23 11:32:38 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:34:25 watch: received 1 event(s); reconciling
+2026/05/23 11:34:25 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:34:26 watch: received 1 event(s); reconciling
+2026/05/23 11:34:26 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:37:15 watch: received 1 event(s); reconciling
+2026/05/23 11:37:15 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:37:43 watch: received 1 event(s); reconciling
+2026/05/23 11:37:43 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:39:32 watch: received 1 event(s); reconciling
+2026/05/23 11:39:32 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:39:33 watch: received 1 event(s); reconciling
+2026/05/23 11:39:33 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:42:22 watch: received 1 event(s); reconciling
+2026/05/23 11:42:22 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:42:50 watch: received 1 event(s); reconciling
+2026/05/23 11:42:50 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:44:38 watch: received 1 event(s); reconciling
+2026/05/23 11:44:38 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:44:39 watch: received 1 event(s); reconciling
+2026/05/23 11:44:39 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:47:29 watch: received 1 event(s); reconciling
+2026/05/23 11:47:29 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:47:55 watch: received 1 event(s); reconciling
+2026/05/23 11:47:55 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:49:37 watch: received 1 event(s); reconciling
+2026/05/23 11:49:37 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:49:37 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:49:37 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:49:42 watch: received 1 event(s); reconciling
+2026/05/23 11:49:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:49:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:49:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:49:45 watch: received 1 event(s); reconciling
+2026/05/23 11:49:45 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:49:47 watch: received 1 event(s); reconciling
+2026/05/23 11:49:47 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:50:27 watch: received 1 event(s); reconciling
+2026/05/23 11:50:27 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:50:27 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:50:27 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:50:42 watch: received 1 event(s); reconciling
+2026/05/23 11:50:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:50:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:50:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:05 watch: received 1 event(s); reconciling
+2026/05/23 11:51:05 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:51:05 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:51:05 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:06 watch: received 1 event(s); reconciling
+2026/05/23 11:51:06 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:51:06 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:51:06 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:27 watch: received 1 event(s); reconciling
+2026/05/23 11:51:27 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:51:27 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:51:27 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:51:42 watch: received 1 event(s); reconciling
+2026/05/23 11:51:42 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:51:42 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:51:42 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:05 watch: received 1 event(s); reconciling
+2026/05/23 11:52:05 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:05 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:52:05 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:06 watch: received 1 event(s); reconciling
+2026/05/23 11:52:06 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:06 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:52:06 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:17 watch: received 1 event(s); reconciling
+2026/05/23 11:52:17 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:17 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:52:17 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:32 watch: received 1 event(s); reconciling
+2026/05/23 11:52:32 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:32 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:52:32 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:35 watch: received 1 event(s); reconciling
+2026/05/23 11:52:35 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:52:47 watch: received 1 event(s); reconciling
+2026/05/23 11:52:47 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:47 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:52:47 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:52 watch: received 1 event(s); reconciling
+2026/05/23 11:52:52 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:52 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:52:52 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:55 watch: received 1 event(s); reconciling
+2026/05/23 11:52:55 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:55 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:52:55 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0
+2026/05/23 11:52:56 watch: received 1 event(s); reconciling
+2026/05/23 11:52:56 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:52:56 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=2
+2026/05/23 11:52:56 watch reconcile: services=1 backends=2 upserted=1 removed=0 unchanged=0
+2026/05/23 11:53:01 watch: received 1 event(s); reconciling
+2026/05/23 11:53:01 watch reconcile: services=1 backends=2 upserted=0 removed=0 unchanged=1
+2026/05/23 11:53:07 watch: received 1 event(s); reconciling
+2026/05/23 11:53:07 delete service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080
+2026/05/23 11:53:07 upsert service: ebpf-nodeport-test/nodeport-echo:30080 frontend=192.168.1.203:30080 backends=1
+2026/05/23 11:53:07 watch reconcile: services=1 backends=1 upserted=1 removed=0 unchanged=0

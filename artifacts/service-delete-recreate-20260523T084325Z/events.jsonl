@@ -1,0 +1,1 @@
+{"ts_start_unix_ms":1779525818914,"ts_end_unix_ms":1779525822073,"label":"service_reconcile","scope":"service","target":"ebpf-nodeport-test/nodeport-echo","recovery_tail_ms":5000}

@@ -1,0 +1,1 @@
+{"ts_start_unix_ms":1779537171797,"ts_end_unix_ms":1779537183797,"label":"path_degradation","scope":"service","target":"ebpf-nodeport-test/nodeport-echo","recovery_tail_ms":3000}

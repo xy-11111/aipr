@@ -52,6 +52,22 @@
 2. 构建一套通过可控故障注入得到的 NodePort 异常数据集。
 3. 系统评估检测准确率、检测时延与运行时开销，并分析其工程可行性。
 
+## 3.4 当前进度（截至 2026-05-24）
+
+- `Phase 1`：已完成
+  - 完成 telemetry collector MVP、CSV 导出、事件标签映射和最小实验闭环。
+- `Phase 2`：已完成
+  - 完成故障注入工具链，并通过多轮实验补齐核心异常场景。
+- `Phase 3`：已完成
+  - 已构建并冻结 `datasets/phase3_v1`，当前数据集覆盖 `train/val/test`。
+- `Phase 4`：已完成
+  - 已完成二分类与多分类 baseline，结果已冻结在 `results/phase4_baselines_v1/`。
+- `Phase 5`：已完成
+  - 已完成 `telemetry off/on x local/remote backend` 的最小 `2x2` 开销评估矩阵。
+  - `Round 01` 中对 local-only 路径的“不支持”判断已在 `Round 02` 中纠正；当前结论为：在 `ETP=Cluster` 前提下，local-only backend 路径可工作，但对拓扑切换后的收敛时机更敏感。
+- `Phase 6`：下一步
+  - 进入泛化与消融设计与实施阶段，重点补齐多负载档位、特征组消融和跨场景稳定性证据。
+
 ## 4. 现有仓库中可直接复用的部分
 
 ### 4.1 数据面遥测统计

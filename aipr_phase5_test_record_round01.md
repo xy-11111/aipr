@@ -1,5 +1,7 @@
 # Phase 5 Test Record Round 01
 
+> Note: the local-only interpretation in this round was corrected by `aipr_phase5_test_record_round02.md`. Keep this file as historical execution record, not as the final conclusion for local scenarios.
+
 ## Summary
 
 本轮完成了两项工作：

@@ -13,6 +13,8 @@ BENCH_WARMUP_SECONDS="${BENCH_WARMUP_SECONDS:-10}"
 BENCH_DURATION_SECONDS="${BENCH_DURATION_SECONDS:-60}"
 BENCH_CONCURRENCY="${BENCH_CONCURRENCY:-16}"
 BENCH_PYTHON="${BENCH_PYTHON:-${ROOT_DIR}/.venv-phase4/bin/python}"
+PHASE5_READY_TIMEOUT_SECONDS="${PHASE5_READY_TIMEOUT_SECONDS:-45}"
+PHASE5_READY_PROBES_REQUIRED="${PHASE5_READY_PROBES_REQUIRED:-3}"
 
 export ARTIFACTS_ROOT="${PHASE5_RAW_ROOT}"
 
@@ -231,6 +233,35 @@ phase5_run_bench() {
     --duration-seconds "${BENCH_DURATION_SECONDS}" \
     --concurrency "${BENCH_CONCURRENCY}" \
     --output-dir "${output_dir}"
+}
+
+phase5_wait_for_nodeport_ready() {
+  local url="$1"
+  local timeout_seconds="${2:-${PHASE5_READY_TIMEOUT_SECONDS}}"
+  local probes_required="${3:-${PHASE5_READY_PROBES_REQUIRED}}"
+  local start now consecutive
+
+  start="$(date +%s)"
+  consecutive=0
+  while true; do
+    if http_get -fsS --max-time 2 "${url}" >/dev/null 2>&1; then
+      consecutive=$((consecutive + 1))
+      if (( consecutive >= probes_required )); then
+        append_note "nodeport_ready_url=${url}"
+        append_note "nodeport_ready_consecutive_successes=${consecutive}"
+        return 0
+      fi
+    else
+      consecutive=0
+    fi
+
+    now="$(date +%s)"
+    if (( now - start >= timeout_seconds )); then
+      append_note "nodeport_ready_timeout_url=${url}"
+      return 1
+    fi
+    sleep 1
+  done
 }
 
 phase5_toggle_telemetry() {

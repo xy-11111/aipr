@@ -1,5 +1,5 @@
 scenario,telemetry,topology,throughput_rps,p50_latency_ms,p99_latency_ms,success_rate,worker1_node_cpu_pct,worker2_node_cpu_pct,worker1_agent_cpu_pct,worker2_agent_cpu_pct
-phase5-off-local,off,local,8.0,0.0,0.0,0.0,19.932,19.329,159.028,154.772
-phase5-on-local,on,local,9.55,2.91,1027.928,0.162304,21.316,19.163,170.349,154.321
+phase5-off-local,off,local,694.833333,13.976,34.457,0.954186,35.855,19.672,297.632,159.289
+phase5-on-local,on,local,870.983333,9.069,25.0,0.947339,36.935,18.494,303.148,150.633
 phase5-off-remote,off,remote,814.816667,7.034,26.211,0.994232,20.374,32.866,162.088,262.798
 phase5-on-remote,on,remote,764.183333,6.492,23.756,0.993195,22.126,32.895,176.561,262.554

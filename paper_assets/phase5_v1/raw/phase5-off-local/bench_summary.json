@@ -1,14 +1,14 @@
 {
   "concurrency": 16,
   "duration_seconds": 60.0,
-  "measurement_end_unix_ms": 1779547105446,
-  "measurement_start_unix_ms": 1779547045446,
-  "p50_latency_ms": 0.0,
-  "p99_latency_ms": 0.0,
-  "success_rate": 0.0,
-  "successful_requests": 0,
-  "throughput_rps": 8.0,
-  "total_requests": 480,
+  "measurement_end_unix_ms": 1779602269479,
+  "measurement_start_unix_ms": 1779602209479,
+  "p50_latency_ms": 13.976,
+  "p99_latency_ms": 34.457,
+  "success_rate": 0.954186,
+  "successful_requests": 39780,
+  "throughput_rps": 694.833333,
+  "total_requests": 41690,
   "url": "http://192.168.1.202:30080/",
   "warmup_seconds": 10.0
 }

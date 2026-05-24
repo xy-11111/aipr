@@ -3,6 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PHASE5_SCENARIOS="${PHASE5_SCENARIOS:-off-local,on-local,off-remote,on-remote}"
 # shellcheck source=./phase5_common.sh
 source "${SCRIPT_DIR}/phase5_common.sh"
 
@@ -36,6 +37,7 @@ phase5_run_scenario() {
 
   clear_shared_events
   phase5_toggle_telemetry "${telemetry_mode}" || fail_experiment "telemetry_toggle_failed:${scenario_name}"
+  phase5_wait_for_nodeport_ready "${url}" || fail_experiment "nodeport_not_ready:${scenario_name}"
 
   read -r w1_total_start w1_idle_start <<< "$(phase5_snapshot_host_cpu k8s-worker1)"
   read -r w2_total_start w2_idle_start <<< "$(phase5_snapshot_host_cpu k8s-worker2)"
@@ -70,6 +72,37 @@ phase5_run_scenario() {
   cleanup_experiment
 }
 
+phase5_run_selected_scenarios() {
+  local item telemetry topology
+  IFS=',' read -r -a scenario_items <<< "${PHASE5_SCENARIOS}"
+  for item in "${scenario_items[@]}"; do
+    item="$(printf '%s' "${item}" | xargs)"
+    [[ -z "${item}" ]] && continue
+    case "${item}" in
+      off-local)
+        telemetry="off"
+        topology="local"
+        ;;
+      on-local)
+        telemetry="on"
+        topology="local"
+        ;;
+      off-remote)
+        telemetry="off"
+        topology="remote"
+        ;;
+      on-remote)
+        telemetry="on"
+        topology="remote"
+        ;;
+      *)
+        fail_experiment "unknown_phase5_scenario:${item}"
+        ;;
+    esac
+    phase5_run_scenario "${telemetry}" "${topology}"
+  done
+}
+
 main() {
   require_cluster_api
   assert_selected_agents_running || fail_experiment "selected_agent_pods_not_running"
@@ -77,10 +110,7 @@ main() {
 
   trap 'phase5_restore_balanced_topology >/dev/null 2>&1 || true; cleanup_experiment' EXIT
 
-  phase5_run_scenario "off" "local"
-  phase5_run_scenario "on" "local"
-  phase5_run_scenario "off" "remote"
-  phase5_run_scenario "on" "remote"
+  phase5_run_selected_scenarios
 
   phase5_restore_balanced_topology || fail_experiment "final_restore_failed"
   "${BENCH_PYTHON}" "${ROOT_DIR}/scripts/phase5_export_paper_assets.py" || fail_experiment "phase5_export_failed"

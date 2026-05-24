@@ -70,8 +70,10 @@
   - 已完成固定 `Phase 4` 最优模型的跨负载、跨拓扑泛化推理与 `paper_assets/phase6_v1/` 表图导出。
   - 已完成 `all_features / minus_datapath_stats / minus_ct_gc / minus_k8s_events / minus_topology_backend` 五组特征消融，结论显示 `datapath_stats` 是最关键的特征组。
   - 结果表明：Phase 4 固定模型在 Phase 6 新负载/新拓扑下存在明显误报与多分类退化，后续论文应将其作为“泛化边界”而不是回避。
-- `Phase 7`：下一步
-  - 进入论文写作阶段，整合 `Phase 4-6` 的效果、开销、泛化与消融结果。
+- `Phase 7`：已完成中文初稿
+  - 已完成中文完整初稿 `paper_draft/phase7_v1/paper_zh.md`，用于内部审阅和论证链打磨。
+  - 已完成图表索引 `paper_draft/phase7_v1/asset_map.md`，将 `paper_assets/phase4_v1`、`paper_assets/phase5_v1`、`paper_assets/phase6_v1` 的核心表图映射到论文各节。
+  - 已完成 `aipr_phase7_writing_record_round01.md`，明确本阶段不是最终投稿稿，下一阶段进入英文化与 AIPR 模板化。
 
 ## 4. 现有仓库中可直接复用的部分
 
@@ -477,24 +479,31 @@
 
 目标：
 
-- 产出第一版可投论文稿
+- 产出第一版可内部审阅的中文完整论文初稿
 
 任务：
 
-- 写引言与问题定义
-- 写系统与遥测采集设计
-- 写数据集构建方法
-- 写检测结果与开销评估
-- 写局限性与未来工作
+- 已写引言与问题定义
+- 已写系统与遥测采集设计
+- 已写数据集构建方法
+- 已写检测结果、开销评估、泛化与消融分析
+- 已写讨论、局限性与未来工作
+- 已整理 Phase 4/5/6 图表索引
 
 交付物：
 
-- 论文初稿 v1
-- 配套图表
+- `paper_draft/phase7_v1/paper_zh.md`
+- `paper_draft/phase7_v1/asset_map.md`
+- `aipr_phase7_writing_record_round01.md`
 
 退出标准：
 
 - 达到可内部审阅状态
+
+下一阶段：
+
+- 将中文初稿英文化，并按 AIPR full paper 模板整理为最终投稿稿。
+- 补齐正式 BibTeX、英文摘要、图表排版和至少 8 页正文的投稿要求。
 
 ## 12. 建议里程碑顺序
 

@@ -1,0 +1,11 @@
+scenario_family,topology,load_tier,row_count,macro_f1,balanced_accuracy,primary_label_f1
+backend_churn,local,high,5,0.0,0.0,0.0
+backend_churn,local,medium,7,0.0,0.0,0.0
+backend_churn,remote,high,5,0.0833333333333333,0.2,0.3333333333333333
+backend_churn,remote,medium,7,0.0,0.0,0.0
+conntrack_pressure,local,high,36,0.0,0.0,0.0
+conntrack_pressure,local,medium,35,0.0394736842105263,0.0857142857142857,0.1578947368421052
+conntrack_pressure,remote,high,37,0.0256410256410256,0.054054054054054,0.1025641025641025
+conntrack_pressure,remote,medium,35,0.0394736842105263,0.0857142857142857,0.1578947368421052
+path_degradation,remote,high,37,0.0105263157894736,0.027027027027027,0.0526315789473684
+path_degradation,remote,medium,35,0.1904761904761904,0.4,0.5714285714285714

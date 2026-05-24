@@ -26,6 +26,8 @@ PRESSURE_DURATION_SECONDS="${PRESSURE_DURATION_SECONDS:-15}"
 PRESSURE_WORKERS="${PRESSURE_WORKERS:-20}"
 BURST_DURATION_SECONDS="${BURST_DURATION_SECONDS:-15}"
 BURST_WORKERS="${BURST_WORKERS:-40}"
+BACKGROUND_LOAD_WORKERS="${BACKGROUND_LOAD_WORKERS:-0}"
+BACKGROUND_LOAD_DURATION_SECONDS="${BACKGROUND_LOAD_DURATION_SECONDS:-${EXPERIMENT_DURATION_SECONDS}}"
 AGENT_READY_TIMEOUT_SECONDS="${AGENT_READY_TIMEOUT_SECONDS:-120}"
 SYNCER_DISCOVERY_TIMEOUT_SECONDS="${SYNCER_DISCOVERY_TIMEOUT_SECONDS:-45}"
 
@@ -39,6 +41,7 @@ TELEMETRY_DIR=""
 AGENT_LOG_DIR=""
 TRAFFIC_PID=""
 declare -a PRESSURE_PIDS=()
+declare -a BACKGROUND_PIDS=()
 declare -a NETEM_ACTIVE=()
 
 now_ms() {
@@ -310,11 +313,58 @@ stop_pressure_traffic() {
   wait_pressure_traffic
 }
 
+start_background_load() {
+  local url="$1"
+  local workers="${BACKGROUND_LOAD_WORKERS}"
+  local duration_seconds="${BACKGROUND_LOAD_DURATION_SECONDS}"
+  local end_epoch
+
+  BACKGROUND_PIDS=()
+  if [[ "${workers}" -le 0 ]]; then
+    return 0
+  fi
+
+  append_note "background_load_workers=${workers}"
+  append_note "background_load_duration_seconds=${duration_seconds}"
+  end_epoch=$(( $(date +%s) + duration_seconds ))
+
+  for _ in $(seq 1 "${workers}"); do
+    (
+      while (( $(date +%s) < end_epoch )); do
+        http_get -fsS --max-time 2 "${url}" >/dev/null || true
+      done
+    ) &
+    BACKGROUND_PIDS+=("$!")
+  done
+}
+
+wait_background_load() {
+  local pid
+  for pid in "${BACKGROUND_PIDS[@]:-}"; do
+    [[ -n "${pid}" ]] || continue
+    wait "${pid}" 2>/dev/null || true
+  done
+  BACKGROUND_PIDS=()
+}
+
+stop_background_load() {
+  local pid
+  for pid in "${BACKGROUND_PIDS[@]:-}"; do
+    [[ -n "${pid}" ]] || continue
+    kill "${pid}" 2>/dev/null || true
+  done
+  wait_background_load
+}
+
 assert_selected_agents_running() {
   while IFS= read -r node_name; do
     [[ -z "${node_name}" ]] && continue
     wait_agent_pod_for_node "${node_name}" 20 >/dev/null || return 1
   done < <(experiment_nodes)
+}
+
+deployment_ready_replicas() {
+  kctl get deployment "${TARGET_DEPLOYMENT}" -n "${TARGET_NAMESPACE}" -o jsonpath='{.status.readyReplicas}'
 }
 
 assert_deployment_ready() {
@@ -329,6 +379,78 @@ assert_deployment_ready() {
   [[ "${ready:-0}" == "${replicas}" ]] || return 1
   [[ "${updated:-0}" == "${replicas}" ]] || return 1
   [[ "${available:-0}" == "${replicas}" ]] || return 1
+}
+
+backend_ready_rows() {
+  local app_label="$1"
+  kctl get pods \
+    -n "${TARGET_NAMESPACE}" \
+    -l "app=${app_label}" \
+    -o jsonpath='{range .items[*]}{.metadata.name}{"|"}{.spec.nodeName}{"|"}{.status.phase}{"|"}{.metadata.deletionTimestamp}{"|"}{range .status.containerStatuses[*]}{.ready}{" "}{end}{"\n"}{end}'
+}
+
+remote_backend_node_name() {
+  local node_name
+  while IFS= read -r node_name; do
+    [[ -z "${node_name}" ]] && continue
+    if [[ "${node_name}" != "${TARGET_NODE_NAME}" ]]; then
+      printf '%s\n' "${node_name}"
+      return 0
+    fi
+  done < <(experiment_nodes)
+  return 1
+}
+
+single_backend_expected_node() {
+  local topology_mode="$1"
+  case "${topology_mode}" in
+    local_single)
+      printf '%s\n' "${TARGET_NODE_NAME}"
+      ;;
+    remote_single)
+      remote_backend_node_name
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+assert_single_backend_on_node() {
+  local expected_node="$1"
+  local app_label rows count found_node
+  app_label="$(deployment_app_label)"
+  rows="$(backend_ready_rows "${app_label}")"
+  count=0
+  found_node=""
+  while IFS='|' read -r pod_name node_name phase deletion_ts ready_flags; do
+    [[ -z "${pod_name}" ]] && continue
+    [[ -n "${deletion_ts}" ]] && continue
+    if [[ "${phase}" == "Running" && "${ready_flags}" == *"true"* ]]; then
+      count=$((count + 1))
+      found_node="${node_name}"
+    fi
+  done <<< "${rows}"
+  [[ "${count}" -eq 1 ]] || return 1
+  [[ "${found_node}" == "${expected_node}" ]] || return 1
+}
+
+wait_single_backend_on_node() {
+  local expected_node="$1"
+  local timeout_seconds="${2:-60}"
+  local start now
+
+  start="$(date +%s)"
+  while true; do
+    if assert_single_backend_on_node "${expected_node}"; then
+      return 0
+    fi
+    now="$(date +%s)"
+    if (( now - start >= timeout_seconds )); then
+      return 1
+    fi
+    sleep 2
+  done
 }
 
 assert_running_backends_on_experiment_nodes() {
@@ -366,19 +488,66 @@ assert_running_backends_on_experiment_nodes() {
   done < <(experiment_nodes)
 }
 
-assert_current_revision_ready() {
+assert_backend_topology_mode() {
   local app_label="$1"
+  local topology_mode="$2"
+  local rows running_count expected_node
+  declare -A counts=()
+  local node_name pod_name phase deletion_ts ready_flags
+
+  while IFS= read -r node_name; do
+    [[ -z "${node_name}" ]] && continue
+    counts["${node_name}"]=0
+  done < <(experiment_nodes)
+
+  rows="$(backend_ready_rows "${app_label}")"
+  running_count=0
+  while IFS='|' read -r pod_name node_name phase deletion_ts ready_flags; do
+    [[ -z "${pod_name}" ]] && continue
+    [[ -n "${deletion_ts}" ]] && continue
+    if [[ "${phase}" == "Running" && "${ready_flags}" == *"true"* ]]; then
+      [[ -v counts["${node_name}"] ]] || return 1
+      counts["${node_name}"]=$((counts["${node_name}"] + 1))
+      running_count=$((running_count + 1))
+    fi
+  done <<< "${rows}"
+
+  case "${topology_mode}" in
+    balanced)
+      local expected_count=0
+      while IFS= read -r node_name; do
+        [[ -z "${node_name}" ]] && continue
+        expected_count=$((expected_count + 1))
+        [[ "${counts["${node_name}"]}" -eq 1 ]] || return 1
+      done < <(experiment_nodes)
+      [[ "${running_count}" -eq "${expected_count}" ]] || return 1
+      ;;
+    local_single|remote_single)
+      expected_node="$(single_backend_expected_node "${topology_mode}")" || return 1
+      [[ "${running_count}" -eq 1 ]] || return 1
+      while IFS= read -r node_name; do
+        [[ -z "${node_name}" ]] && continue
+        if [[ "${node_name}" == "${expected_node}" ]]; then
+          [[ "${counts["${node_name}"]}" -eq 1 ]] || return 1
+        else
+          [[ "${counts["${node_name}"]}" -eq 0 ]] || return 1
+        fi
+      done < <(experiment_nodes)
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+assert_current_revision_ready_count() {
+  local app_label="$1"
+  local expected_count="$2"
   local revision_hash
   revision_hash="$(current_revision_hash "${app_label}")"
   [[ -n "${revision_hash}" ]] || return 1
 
-  local expected_count=0
   local ready_count=0
-
-  while IFS= read -r node_name; do
-    [[ -z "${node_name}" ]] && continue
-    expected_count=$((expected_count + 1))
-  done < <(experiment_nodes)
 
   local rows
   rows="$(kctl get pods \
@@ -396,8 +565,10 @@ assert_current_revision_ready() {
   [[ "${ready_count}" -eq "${expected_count}" ]] || return 1
 }
 
-preflight_two_node_experiment() {
+preflight_experiment_topology() {
+  local topology_mode="${1:-balanced}"
   local app_label
+  local expected_ready_replicas=0
 
   require_cluster_api || {
     record_failure "cluster_api_unreachable"
@@ -420,15 +591,109 @@ preflight_two_node_experiment() {
     return 1
   }
 
-  assert_running_backends_on_experiment_nodes "${app_label}" || {
+  assert_backend_topology_mode "${app_label}" "${topology_mode}" || {
     record_failure "backend_topology_not_stable"
     return 1
   }
 
-  assert_current_revision_ready "${app_label}" || {
+  case "${topology_mode}" in
+    balanced)
+      while IFS= read -r node_name; do
+        [[ -z "${node_name}" ]] && continue
+        expected_ready_replicas=$((expected_ready_replicas + 1))
+      done < <(experiment_nodes)
+      ;;
+    local_single|remote_single)
+      expected_ready_replicas=1
+      ;;
+    *)
+      record_failure "unknown_topology_mode:${topology_mode}"
+      return 1
+      ;;
+  esac
+
+  assert_current_revision_ready_count "${app_label}" "${expected_ready_replicas}" || {
     record_failure "current_revision_not_fully_ready"
     return 1
   }
+}
+
+preflight_two_node_experiment() {
+  preflight_experiment_topology "balanced"
+}
+
+backend_patch_payload() {
+  local node_name="$1"
+  cat <<EOF
+{
+  "spec": {
+    "replicas": 1,
+    "template": {
+      "spec": {
+        "affinity": {
+          "nodeAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "nodeSelectorTerms": [
+                {
+                  "matchExpressions": [
+                    {
+                      "key": "kubernetes.io/hostname",
+                      "operator": "In",
+                      "values": ["${node_name}"]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "podAntiAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "labelSelector": {
+                  "matchLabels": {
+                    "app": "nodeport-echo"
+                  }
+                },
+                "topologyKey": "kubernetes.io/hostname"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+EOF
+}
+
+restore_balanced_topology() {
+  kctl apply -f "${ROOT_DIR}/manifests/nodeport-test.yaml" >/dev/null
+  kctl rollout status "deployment/${TARGET_DEPLOYMENT}" -n "${TARGET_NAMESPACE}" --timeout="${ROLLOUT_TIMEOUT}" >/dev/null
+  preflight_experiment_topology "balanced"
+}
+
+prepare_topology_mode() {
+  local mode="$1"
+  local target_node
+  case "${mode}" in
+    balanced)
+      restore_balanced_topology
+      return
+      ;;
+    local)
+      target_node="${TARGET_NODE_NAME}"
+      ;;
+    remote)
+      target_node="$(remote_backend_node_name)" || return 1
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+
+  kctl patch deployment "${TARGET_DEPLOYMENT}" -n "${TARGET_NAMESPACE}" --type merge -p "$(backend_patch_payload "${target_node}")" >/dev/null
+  kctl rollout status "deployment/${TARGET_DEPLOYMENT}" -n "${TARGET_NAMESPACE}" --timeout="${ROLLOUT_TIMEOUT}" >/dev/null
+  wait_single_backend_on_node "${target_node}" 60
 }
 
 sh_quote() {
@@ -692,6 +957,7 @@ clear_netem_on_node() {
 
 cleanup_experiment() {
   local target
+  stop_background_load
   stop_pressure_traffic
   stop_traffic
   for target in "${NETEM_ACTIVE[@]:-}"; do

@@ -1,0 +1,17 @@
+scope,scenario_family,topology,load_tier,row_count,false_positive_rate,specificity,anomaly_f1,balanced_accuracy
+normal,normal,local,high,127,0.3779527559055118,0.6220472440944882,nan,nan
+normal,normal,local,low,134,0.373134328358209,0.6268656716417911,nan,nan
+normal,normal,local,medium,133,0.3759398496240601,0.6240601503759399,nan,nan
+normal,normal,remote,high,178,0.4719101123595505,0.5280898876404494,nan,nan
+normal,normal,remote,low,127,0.7007874015748031,0.2992125984251969,nan,nan
+normal,normal,remote,medium,128,0.5078125,0.4921875,nan,nan
+anomaly,backend_churn,local,high,102,nan,nan,0.1311475409836065,0.6319587628865979
+anomaly,backend_churn,local,medium,125,nan,nan,0.1052631578947368,0.5151331719128329
+anomaly,backend_churn,remote,high,110,nan,nan,0.0833333333333333,0.4857142857142857
+anomaly,backend_churn,remote,medium,109,nan,nan,0.1075268817204301,0.4600840336134454
+anomaly,conntrack_pressure,local,high,115,nan,nan,0.4,0.5107243319268636
+anomaly,conntrack_pressure,local,medium,64,nan,nan,0.53125,0.5359605911330049
+anomaly,conntrack_pressure,remote,high,96,nan,nan,0.6260869565217392,0.630554283096656
+anomaly,conntrack_pressure,remote,medium,87,nan,nan,0.6526315789473685,0.664010989010989
+anomaly,path_degradation,remote,high,110,nan,nan,0.5373134328358209,0.5686782673084043
+anomaly,path_degradation,remote,medium,151,nan,nan,0.1833333333333333,0.3381773399014778

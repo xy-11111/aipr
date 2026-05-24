@@ -1,0 +1,32 @@
+{
+  "artifacts_dir": "artifacts",
+  "built_at_utc": "2026-05-24T07:23:02Z",
+  "dataset_field_count": 57,
+  "dataset_version": "phase3_v1",
+  "excluded_experiments": [],
+  "experiment_count": 16,
+  "included_experiments": [
+    "phase6-local-low-normal-20260524T065946Z",
+    "phase6-remote-low-normal-20260524T070146Z",
+    "phase6-local-medium-normal-20260524T070311Z",
+    "phase6-remote-medium-normal-20260524T070442Z",
+    "phase6-local-high-normal-20260524T070608Z",
+    "phase6-remote-high-normal-20260524T070734Z",
+    "phase6-local-medium-backend-churn-20260524T070925Z",
+    "phase6-remote-medium-backend-churn-20260524T071048Z",
+    "phase6-local-high-backend-churn-20260524T071203Z",
+    "phase6-remote-high-backend-churn-20260524T071316Z",
+    "phase6-local-medium-conntrack-pressure-20260524T071431Z",
+    "phase6-remote-medium-conntrack-pressure-20260524T071524Z",
+    "phase6-local-high-conntrack-pressure-20260524T071629Z",
+    "phase6-remote-high-conntrack-pressure-20260524T071751Z",
+    "phase6-remote-medium-path-degradation-20260524T071903Z",
+    "phase6-remote-high-path-degradation-20260524T072035Z"
+  ],
+  "output_dir": "datasets/phase6_generalization_v1",
+  "raw_index_csv": "datasets/phase6_generalization_v1/raw_index.csv",
+  "row_count": 1896,
+  "selection_file": "datasets/phase6_generalization_v1/experiment_selection.json",
+  "telemetry_field_count": 49,
+  "windows_all_csv": "datasets/phase6_generalization_v1/windows_all.csv"
+}

@@ -1,0 +1,66 @@
+{
+  "generated_at_utc": "2026-05-24T07:24:26Z",
+  "groups": [
+    {
+      "anomaly_prediction_rate": 0.3779527559055118,
+      "experiment_count": 1,
+      "false_positive_rate": 0.3779527559055118,
+      "load_tier": "high",
+      "normal_recall": 0.6220472440944882,
+      "row_count": 127,
+      "specificity": 0.6220472440944882,
+      "topology": "local"
+    },
+    {
+      "anomaly_prediction_rate": 0.373134328358209,
+      "experiment_count": 1,
+      "false_positive_rate": 0.373134328358209,
+      "load_tier": "low",
+      "normal_recall": 0.6268656716417911,
+      "row_count": 134,
+      "specificity": 0.6268656716417911,
+      "topology": "local"
+    },
+    {
+      "anomaly_prediction_rate": 0.37593984962406013,
+      "experiment_count": 1,
+      "false_positive_rate": 0.37593984962406013,
+      "load_tier": "medium",
+      "normal_recall": 0.6240601503759399,
+      "row_count": 133,
+      "specificity": 0.6240601503759399,
+      "topology": "local"
+    },
+    {
+      "anomaly_prediction_rate": 0.47191011235955055,
+      "experiment_count": 1,
+      "false_positive_rate": 0.47191011235955055,
+      "load_tier": "high",
+      "normal_recall": 0.5280898876404494,
+      "row_count": 178,
+      "specificity": 0.5280898876404494,
+      "topology": "remote"
+    },
+    {
+      "anomaly_prediction_rate": 0.7007874015748031,
+      "experiment_count": 1,
+      "false_positive_rate": 0.7007874015748031,
+      "load_tier": "low",
+      "normal_recall": 0.2992125984251969,
+      "row_count": 127,
+      "specificity": 0.2992125984251969,
+      "topology": "remote"
+    },
+    {
+      "anomaly_prediction_rate": 0.5078125,
+      "experiment_count": 1,
+      "false_positive_rate": 0.5078125,
+      "load_tier": "medium",
+      "normal_recall": 0.4921875,
+      "row_count": 128,
+      "specificity": 0.4921875,
+      "topology": "remote"
+    }
+  ],
+  "scope": "normal_only"
+}

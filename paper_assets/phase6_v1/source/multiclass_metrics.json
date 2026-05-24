@@ -1,0 +1,698 @@
+{
+  "generated_at_utc": "2026-05-24T07:06:10Z",
+  "variants": {
+    "all_features": {
+      "dropped_group": "",
+      "feature_count": 27,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.5,
+        "balanced_accuracy": 0.4158730158730158,
+        "macro_f1": 0.4180792349889056,
+        "macro_precision": 0.45363550948657333,
+        "macro_recall": 0.4158730158730158,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "conntrack_pressure": {
+            "f1": 0.6292134831460674,
+            "precision": 0.5957446808510638,
+            "recall": 0.6666666666666666,
+            "support": 42
+          },
+          "control_plane_recovery": {
+            "f1": 0.625,
+            "precision": 0.8333333333333334,
+            "recall": 0.5,
+            "support": 10
+          },
+          "load_surge": {
+            "f1": 0.44680851063829785,
+            "precision": 0.40384615384615385,
+            "recall": 0.5,
+            "support": 42
+          },
+          "path_degradation": {
+            "f1": 0.5217391304347826,
+            "precision": 0.6666666666666666,
+            "recall": 0.42857142857142855,
+            "support": 42
+          },
+          "service_reconcile": {
+            "f1": 0.2857142857142857,
+            "precision": 0.2222222222222222,
+            "recall": 0.4,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 2,
+          "conntrack_pressure": 47,
+          "control_plane_recovery": 6,
+          "load_surge": 52,
+          "path_degradation": 27,
+          "service_reconcile": 18
+        },
+        "weighted_f1": 0.5014020399628096,
+        "weighted_precision": 0.5298577014002547,
+        "weighted_recall": 0.5
+      },
+      "val_metrics": {
+        "accuracy": 0.5045045045045045,
+        "balanced_accuracy": 0.3744389709906952,
+        "macro_f1": 0.37219458264234384,
+        "macro_precision": 0.38242560742560744,
+        "macro_recall": 0.3744389709906952,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.3333333333333333,
+            "precision": 0.4,
+            "recall": 0.2857142857142857,
+            "support": 7
+          },
+          "conntrack_pressure": {
+            "f1": 0.7384615384615385,
+            "precision": 0.6666666666666666,
+            "recall": 0.8275862068965517,
+            "support": 29
+          },
+          "control_plane_recovery": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 5
+          },
+          "load_surge": {
+            "f1": 0.47761194029850745,
+            "precision": 0.43243243243243246,
+            "recall": 0.5333333333333333,
+            "support": 30
+          },
+          "path_degradation": {
+            "f1": 0.46153846153846156,
+            "precision": 0.5454545454545454,
+            "recall": 0.4,
+            "support": 30
+          },
+          "service_reconcile": {
+            "f1": 0.2222222222222222,
+            "precision": 0.25,
+            "recall": 0.2,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 5,
+          "conntrack_pressure": 36,
+          "control_plane_recovery": 3,
+          "load_surge": 37,
+          "path_degradation": 22,
+          "service_reconcile": 8
+        },
+        "weighted_f1": 0.48779686690134455,
+        "weighted_precision": 0.48621569972921325,
+        "weighted_recall": 0.5045045045045045
+      }
+    },
+    "minus_ct_gc": {
+      "dropped_group": "ct_gc",
+      "feature_count": 20,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.5328947368421053,
+        "balanced_accuracy": 0.4611111111111111,
+        "macro_f1": 0.39492228221419906,
+        "macro_precision": 0.5580047889519991,
+        "macro_recall": 0.4611111111111111,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "conntrack_pressure": {
+            "f1": 0.6260869565217392,
+            "precision": 0.4931506849315068,
+            "recall": 0.8571428571428571,
+            "support": 42
+          },
+          "control_plane_recovery": {
+            "f1": 0.5333333333333333,
+            "precision": 0.8,
+            "recall": 0.4,
+            "support": 10
+          },
+          "load_surge": {
+            "f1": 0.046511627906976744,
+            "precision": 1.0,
+            "recall": 0.023809523809523808,
+            "support": 42
+          },
+          "path_degradation": {
+            "f1": 0.7951807228915663,
+            "precision": 0.8048780487804879,
+            "recall": 0.7857142857142857,
+            "support": 42
+          },
+          "service_reconcile": {
+            "f1": 0.3684210526315789,
+            "precision": 0.25,
+            "recall": 0.7,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 4,
+          "conntrack_pressure": 73,
+          "control_plane_recovery": 5,
+          "load_surge": 1,
+          "path_degradation": 41,
+          "service_reconcile": 28
+        },
+        "weighted_f1": 0.46489654452040124,
+        "weighted_precision": 0.7040605711572616,
+        "weighted_recall": 0.5328947368421053
+      },
+      "val_metrics": {
+        "accuracy": 0.4594594594594595,
+        "balanced_accuracy": 0.3909140667761357,
+        "macro_f1": 0.3346330697403613,
+        "macro_precision": 0.39703647416413373,
+        "macro_recall": 0.3909140667761357,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.3076923076923077,
+            "precision": 0.3333333333333333,
+            "recall": 0.2857142857142857,
+            "support": 7
+          },
+          "conntrack_pressure": {
+            "f1": 0.6052631578947368,
+            "precision": 0.48936170212765956,
+            "recall": 0.7931034482758621,
+            "support": 29
+          },
+          "control_plane_recovery": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 5
+          },
+          "load_surge": {
+            "f1": 0.12121212121212122,
+            "precision": 0.6666666666666666,
+            "recall": 0.06666666666666667,
+            "support": 30
+          },
+          "path_degradation": {
+            "f1": 0.6206896551724138,
+            "precision": 0.6428571428571429,
+            "recall": 0.6,
+            "support": 30
+          },
+          "service_reconcile": {
+            "f1": 0.35294117647058826,
+            "precision": 0.25,
+            "recall": 0.6,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 6,
+          "conntrack_pressure": 47,
+          "control_plane_recovery": 3,
+          "load_surge": 3,
+          "path_degradation": 28,
+          "service_reconcile": 24
+        },
+        "weighted_f1": 0.40984633143275184,
+        "weighted_precision": 0.5253201529797275,
+        "weighted_recall": 0.4594594594594595
+      }
+    },
+    "minus_datapath_stats": {
+      "dropped_group": "datapath_stats",
+      "feature_count": 18,
+      "selected_columns": [
+        "has_remote_backend",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.3092105263157895,
+        "balanced_accuracy": 0.25,
+        "macro_f1": 0.23391812865497075,
+        "macro_precision": 0.2638888888888889,
+        "macro_recall": 0.25,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "conntrack_pressure": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 42
+          },
+          "control_plane_recovery": {
+            "f1": 0.6666666666666666,
+            "precision": 1.0,
+            "recall": 0.5,
+            "support": 10
+          },
+          "load_surge": {
+            "f1": 0.38596491228070173,
+            "precision": 0.3055555555555556,
+            "recall": 0.5238095238095238,
+            "support": 42
+          },
+          "path_degradation": {
+            "f1": 0.3508771929824561,
+            "precision": 0.2777777777777778,
+            "recall": 0.47619047619047616,
+            "support": 42
+          },
+          "service_reconcile": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "conntrack_pressure": 2,
+          "control_plane_recovery": 5,
+          "load_surge": 72,
+          "path_degradation": 72,
+          "service_reconcile": 1
+        },
+        "weighted_f1": 0.24746075715604798,
+        "weighted_precision": 0.22697368421052633,
+        "weighted_recall": 0.3092105263157895
+      },
+      "val_metrics": {
+        "accuracy": 0.3153153153153153,
+        "balanced_accuracy": 0.19540229885057472,
+        "macro_f1": 0.17345861233110135,
+        "macro_precision": 0.266304347826087,
+        "macro_recall": 0.19540229885057472,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 7
+          },
+          "conntrack_pressure": {
+            "f1": 0.29411764705882354,
+            "precision": 1.0,
+            "recall": 0.1724137931034483,
+            "support": 29
+          },
+          "control_plane_recovery": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 5
+          },
+          "load_surge": {
+            "f1": 0.42105263157894735,
+            "precision": 0.34782608695652173,
+            "recall": 0.5333333333333333,
+            "support": 30
+          },
+          "path_degradation": {
+            "f1": 0.32558139534883723,
+            "precision": 0.25,
+            "recall": 0.4666666666666667,
+            "support": 30
+          },
+          "service_reconcile": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "conntrack_pressure": 5,
+          "control_plane_recovery": 4,
+          "load_surge": 46,
+          "path_degradation": 56
+        },
+        "weighted_f1": 0.2786345276805353,
+        "weighted_precision": 0.4228358793576185,
+        "weighted_recall": 0.3153153153153153
+      }
+    },
+    "minus_k8s_events": {
+      "dropped_group": "k8s_events",
+      "feature_count": 21,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta"
+      ],
+      "test_metrics": {
+        "accuracy": 0.48026315789473684,
+        "balanced_accuracy": 0.42936507936507934,
+        "macro_f1": 0.40820304585668943,
+        "macro_precision": 0.44504385127480556,
+        "macro_recall": 0.42936507936507934,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "conntrack_pressure": {
+            "f1": 0.6153846153846154,
+            "precision": 0.5714285714285714,
+            "recall": 0.6666666666666666,
+            "support": 42
+          },
+          "control_plane_recovery": {
+            "f1": 0.625,
+            "precision": 0.8333333333333334,
+            "recall": 0.5,
+            "support": 10
+          },
+          "load_surge": {
+            "f1": 0.4235294117647059,
+            "precision": 0.4186046511627907,
+            "recall": 0.42857142857142855,
+            "support": 42
+          },
+          "path_degradation": {
+            "f1": 0.47761194029850745,
+            "precision": 0.64,
+            "recall": 0.38095238095238093,
+            "support": 42
+          },
+          "service_reconcile": {
+            "f1": 0.3076923076923077,
+            "precision": 0.20689655172413793,
+            "recall": 0.6,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "conntrack_pressure": 49,
+          "control_plane_recovery": 6,
+          "load_surge": 43,
+          "path_degradation": 25,
+          "service_reconcile": 29
+        },
+        "weighted_f1": 0.48040140598507824,
+        "weighted_precision": 0.5188400934171837,
+        "weighted_recall": 0.48026315789473684
+      },
+      "val_metrics": {
+        "accuracy": 0.5225225225225225,
+        "balanced_accuracy": 0.41174055829228245,
+        "macro_f1": 0.38913030677736565,
+        "macro_precision": 0.44143819143819146,
+        "macro_recall": 0.41174055829228245,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.2222222222222222,
+            "precision": 0.5,
+            "recall": 0.14285714285714285,
+            "support": 7
+          },
+          "conntrack_pressure": {
+            "f1": 0.7384615384615385,
+            "precision": 0.6666666666666666,
+            "recall": 0.8275862068965517,
+            "support": 29
+          },
+          "control_plane_recovery": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 5
+          },
+          "load_surge": {
+            "f1": 0.5882352941176471,
+            "precision": 0.7142857142857143,
+            "recall": 0.5,
+            "support": 30
+          },
+          "path_degradation": {
+            "f1": 0.46153846153846156,
+            "precision": 0.5454545454545454,
+            "recall": 0.4,
+            "support": 30
+          },
+          "service_reconcile": {
+            "f1": 0.32432432432432434,
+            "precision": 0.2222222222222222,
+            "recall": 0.6,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 2,
+          "conntrack_pressure": 36,
+          "control_plane_recovery": 3,
+          "load_surge": 21,
+          "path_degradation": 22,
+          "service_reconcile": 27
+        },
+        "weighted_f1": 0.5198864512060061,
+        "weighted_precision": 0.5661960661960661,
+        "weighted_recall": 0.5225225225225225
+      }
+    },
+    "minus_topology_backend": {
+      "dropped_group": "topology_backend",
+      "feature_count": 22,
+      "selected_columns": [
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.47368421052631576,
+        "balanced_accuracy": 0.3619047619047619,
+        "macro_f1": 0.3748492354684343,
+        "macro_precision": 0.4212510779085934,
+        "macro_recall": 0.3619047619047619,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "conntrack_pressure": {
+            "f1": 0.6292134831460674,
+            "precision": 0.5957446808510638,
+            "recall": 0.6666666666666666,
+            "support": 42
+          },
+          "control_plane_recovery": {
+            "f1": 0.625,
+            "precision": 0.8333333333333334,
+            "recall": 0.5,
+            "support": 10
+          },
+          "load_surge": {
+            "f1": 0.4230769230769231,
+            "precision": 0.3548387096774194,
+            "recall": 0.5238095238095238,
+            "support": 42
+          },
+          "path_degradation": {
+            "f1": 0.48484848484848486,
+            "precision": 0.6666666666666666,
+            "recall": 0.38095238095238093,
+            "support": 42
+          },
+          "service_reconcile": {
+            "f1": 0.08695652173913043,
+            "precision": 0.07692307692307693,
+            "recall": 0.1,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "conntrack_pressure": 47,
+          "control_plane_recovery": 6,
+          "load_surge": 62,
+          "path_degradation": 24,
+          "service_reconcile": 13
+        },
+        "weighted_f1": 0.47157499106837675,
+        "weighted_precision": 0.5067570164786869,
+        "weighted_recall": 0.47368421052631576
+      },
+      "val_metrics": {
+        "accuracy": 0.5045045045045045,
+        "balanced_accuracy": 0.3561850027367269,
+        "macro_f1": 0.3560649298843168,
+        "macro_precision": 0.4020782740294935,
+        "macro_recall": 0.3561850027367269,
+        "per_class": {
+          "backend_churn": {
+            "f1": 0.2222222222222222,
+            "precision": 0.5,
+            "recall": 0.14285714285714285,
+            "support": 7
+          },
+          "conntrack_pressure": {
+            "f1": 0.7384615384615385,
+            "precision": 0.6666666666666666,
+            "recall": 0.8275862068965517,
+            "support": 29
+          },
+          "control_plane_recovery": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 5
+          },
+          "load_surge": {
+            "f1": 0.4788732394366197,
+            "precision": 0.4146341463414634,
+            "recall": 0.5666666666666667,
+            "support": 30
+          },
+          "path_degradation": {
+            "f1": 0.46153846153846156,
+            "precision": 0.5454545454545454,
+            "recall": 0.4,
+            "support": 30
+          },
+          "service_reconcile": {
+            "f1": 0.23529411764705882,
+            "precision": 0.2857142857142857,
+            "recall": 0.2,
+            "support": 10
+          }
+        },
+        "prediction_distribution": {
+          "backend_churn": 2,
+          "conntrack_pressure": 36,
+          "control_plane_recovery": 3,
+          "load_surge": 41,
+          "path_degradation": 22,
+          "service_reconcile": 7
+        },
+        "weighted_f1": 0.48230839978975854,
+        "weighted_precision": 0.49092916166086886,
+        "weighted_recall": 0.5045045045045045
+      }
+    }
+  }
+}

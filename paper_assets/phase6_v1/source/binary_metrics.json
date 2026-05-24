@@ -1,0 +1,323 @@
+{
+  "generated_at_utc": "2026-05-24T07:06:10Z",
+  "variants": {
+    "all_features": {
+      "dropped_group": "",
+      "feature_count": 27,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.8683693516699411,
+        "anomaly_f1": 0.7774086378737541,
+        "anomaly_precision": 0.785234899328859,
+        "anomaly_recall": 0.7697368421052632,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.8400504938817632,
+        "normal_f1": 0.9065550906555091,
+        "normal_precision": 0.9027777777777778,
+        "normal_recall": 0.9103641456582633,
+        "normal_support": 357,
+        "pr_auc": 0.8449130374700579,
+        "prediction_distribution": {
+          "anomaly": 149,
+          "normal": 360
+        },
+        "roc_auc": 0.865638360607401
+      },
+      "val_metrics": {
+        "accuracy": 0.8575,
+        "anomaly_f1": 0.7348837209302326,
+        "anomaly_precision": 0.7596153846153846,
+        "anomaly_recall": 0.7117117117117117,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8126032607001465,
+        "normal_f1": 0.9025641025641026,
+        "normal_precision": 0.8918918918918919,
+        "normal_recall": 0.9134948096885813,
+        "normal_support": 289,
+        "pr_auc": 0.8277006563935629,
+        "prediction_distribution": {
+          "anomaly": 104,
+          "normal": 296
+        },
+        "roc_auc": 0.8795473674366407
+      }
+    },
+    "minus_ct_gc": {
+      "dropped_group": "ct_gc",
+      "feature_count": 20,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.862475442043222,
+        "anomaly_f1": 0.7033898305084746,
+        "anomaly_precision": 0.9880952380952381,
+        "anomaly_recall": 0.5460526315789473,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.771625755565384,
+        "normal_f1": 0.9104859335038363,
+        "normal_precision": 0.8376470588235294,
+        "normal_recall": 0.9971988795518207,
+        "normal_support": 357,
+        "pr_auc": 0.8288834894501728,
+        "prediction_distribution": {
+          "anomaly": 84,
+          "normal": 425
+        },
+        "roc_auc": 0.8829887218045113
+      },
+      "val_metrics": {
+        "accuracy": 0.8625,
+        "anomaly_f1": 0.6745562130177515,
+        "anomaly_precision": 0.9827586206896551,
+        "anomaly_recall": 0.5135135135135135,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7550266529505283,
+        "normal_f1": 0.9128367670364501,
+        "normal_precision": 0.8421052631578947,
+        "normal_recall": 0.9965397923875432,
+        "normal_support": 289,
+        "pr_auc": 0.844549063837566,
+        "prediction_distribution": {
+          "anomaly": 58,
+          "normal": 342
+        },
+        "roc_auc": 0.9080239408959132
+      }
+    },
+    "minus_datapath_stats": {
+      "dropped_group": "datapath_stats",
+      "feature_count": 18,
+      "selected_columns": [
+        "has_remote_backend",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.7190569744597249,
+        "anomaly_f1": 0.4982456140350877,
+        "anomaly_precision": 0.5338345864661654,
+        "anomaly_recall": 0.46710526315789475,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.6467178976853899,
+        "normal_f1": 0.8049113233287858,
+        "normal_precision": 0.7845744680851063,
+        "normal_recall": 0.8263305322128851,
+        "normal_support": 357,
+        "pr_auc": 0.5383568353679429,
+        "prediction_distribution": {
+          "anomaly": 133,
+          "normal": 376
+        },
+        "roc_auc": 0.7602554179566563
+      },
+      "val_metrics": {
+        "accuracy": 0.7775,
+        "anomaly_f1": 0.5027932960893855,
+        "anomaly_precision": 0.6617647058823529,
+        "anomaly_recall": 0.40540540540540543,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.6629103151594501,
+        "normal_f1": 0.856682769726248,
+        "normal_precision": 0.8012048192771084,
+        "normal_recall": 0.9204152249134948,
+        "normal_support": 289,
+        "pr_auc": 0.5647160426034289,
+        "prediction_distribution": {
+          "anomaly": 68,
+          "normal": 332
+        },
+        "roc_auc": 0.7980142772530316
+      }
+    },
+    "minus_k8s_events": {
+      "dropped_group": "k8s_events",
+      "feature_count": 21,
+      "selected_columns": [
+        "has_remote_backend",
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "backend_total",
+        "backend_local",
+        "backend_remote",
+        "backend_total_delta"
+      ],
+      "test_metrics": {
+        "accuracy": 0.8447937131630648,
+        "anomaly_f1": 0.7375415282392026,
+        "anomaly_precision": 0.7449664429530202,
+        "anomaly_recall": 0.7302631578947368,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.8119102904319623,
+        "normal_f1": 0.8898186889818689,
+        "normal_precision": 0.8861111111111111,
+        "normal_recall": 0.8935574229691877,
+        "normal_support": 357,
+        "pr_auc": 0.8231799372636129,
+        "prediction_distribution": {
+          "anomaly": 149,
+          "normal": 360
+        },
+        "roc_auc": 0.8481221435942797
+      },
+      "val_metrics": {
+        "accuracy": 0.8425,
+        "anomaly_f1": 0.7224669603524229,
+        "anomaly_precision": 0.7068965517241379,
+        "anomaly_recall": 0.7387387387387387,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.8105458399576047,
+        "normal_f1": 0.8900523560209425,
+        "normal_precision": 0.897887323943662,
+        "normal_recall": 0.8823529411764706,
+        "normal_support": 289,
+        "pr_auc": 0.8263125510646964,
+        "prediction_distribution": {
+          "anomaly": 116,
+          "normal": 284
+        },
+        "roc_auc": 0.8783627918576016
+      }
+    },
+    "minus_topology_backend": {
+      "dropped_group": "topology_backend",
+      "feature_count": 22,
+      "selected_columns": [
+        "delta_tcp_packets",
+        "delta_nodeport_hit",
+        "delta_backend_selected",
+        "delta_rr_update",
+        "delta_snat_install",
+        "delta_request_rewrite",
+        "delta_revnat_hit",
+        "delta_ct_lookup_miss",
+        "delta_response_rewrite",
+        "ct_active_count",
+        "fwd_ct_active_count",
+        "gc_runs_in_window",
+        "gc_deleted_ct",
+        "gc_deleted_fwd_ct",
+        "ct_entry_timeout_seconds",
+        "ct_gc_interval_seconds",
+        "service_event_seen",
+        "slice_event_seen",
+        "node_event_seen",
+        "sync_reconcile_count",
+        "sync_upserted_services",
+        "sync_removed_services"
+      ],
+      "test_metrics": {
+        "accuracy": 0.8035363457760314,
+        "anomaly_f1": 0.6987951807228916,
+        "anomaly_precision": 0.6444444444444445,
+        "anomaly_recall": 0.7631578947368421,
+        "anomaly_support": 152,
+        "balanced_accuracy": 0.7919430930266844,
+        "normal_f1": 0.8542274052478134,
+        "normal_precision": 0.8905775075987842,
+        "normal_recall": 0.8207282913165266,
+        "normal_support": 357,
+        "pr_auc": 0.8096512731580152,
+        "prediction_distribution": {
+          "anomaly": 180,
+          "normal": 329
+        },
+        "roc_auc": 0.8318314167772373
+      },
+      "val_metrics": {
+        "accuracy": 0.8,
+        "anomaly_f1": 0.6721311475409836,
+        "anomaly_precision": 0.6165413533834586,
+        "anomaly_recall": 0.7387387387387387,
+        "anomaly_support": 111,
+        "balanced_accuracy": 0.7811340752517223,
+        "normal_f1": 0.8561151079136691,
+        "normal_precision": 0.8913857677902621,
+        "normal_recall": 0.8235294117647058,
+        "normal_support": 289,
+        "pr_auc": 0.7953161289344653,
+        "prediction_distribution": {
+          "anomaly": 133,
+          "normal": 267
+        },
+        "roc_auc": 0.8465974625144175
+      }
+    }
+  }
+}

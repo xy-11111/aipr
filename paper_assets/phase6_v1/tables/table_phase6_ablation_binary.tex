@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Phase 6 binary ablation results.}
+\label{tab:phase6_ablation_binary}
+\begin{tabular}{lrrrrr}
+\hline
+variant & feature\_count & test\_anomaly\_f1 & test\_pr\_auc & test\_balanced\_accuracy & delta\_vs\_all \\
+\hline
+all\_features & 27 & 0.7774 & 0.8449 & 0.8401 & 0.0000 \\
+minus\_datapath\_stats & 18 & 0.4982 & 0.5384 & 0.6467 & -0.2792 \\
+minus\_ct\_gc & 20 & 0.7034 & 0.8289 & 0.7716 & -0.0740 \\
+minus\_k8s\_events & 21 & 0.7375 & 0.8232 & 0.8119 & -0.0399 \\
+minus\_topology\_backend & 22 & 0.6988 & 0.8097 & 0.7919 & -0.0786 \\
+\hline
+\end{tabular}
+\end{table}

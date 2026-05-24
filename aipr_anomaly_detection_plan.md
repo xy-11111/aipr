@@ -65,8 +65,13 @@
 - `Phase 5`：已完成
   - 已完成 `telemetry off/on x local/remote backend` 的最小 `2x2` 开销评估矩阵。
   - `Round 01` 中对 local-only 路径的“不支持”判断已在 `Round 02` 中纠正；当前结论为：在 `ETP=Cluster` 前提下，local-only backend 路径可工作，但对拓扑切换后的收敛时机更敏感。
-- `Phase 6`：下一步
-  - 进入泛化与消融设计与实施阶段，重点补齐多负载档位、特征组消融和跨场景稳定性证据。
+- `Phase 6`：已完成
+  - 已完成 `6` 轮正常稳态泛化与 `10` 轮异常泛化实验，并构建 `datasets/phase6_generalization_v1/`。
+  - 已完成固定 `Phase 4` 最优模型的跨负载、跨拓扑泛化推理与 `paper_assets/phase6_v1/` 表图导出。
+  - 已完成 `all_features / minus_datapath_stats / minus_ct_gc / minus_k8s_events / minus_topology_backend` 五组特征消融，结论显示 `datapath_stats` 是最关键的特征组。
+  - 结果表明：Phase 4 固定模型在 Phase 6 新负载/新拓扑下存在明显误报与多分类退化，后续论文应将其作为“泛化边界”而不是回避。
+- `Phase 7`：下一步
+  - 进入论文写作阶段，整合 `Phase 4-6` 的效果、开销、泛化与消融结果。
 
 ## 4. 现有仓库中可直接复用的部分
 

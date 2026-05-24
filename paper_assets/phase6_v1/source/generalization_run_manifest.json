@@ -1,0 +1,36 @@
+{
+  "anomaly_only_row_count": 239,
+  "anomaly_row_count": 1069,
+  "binary_model_run_id": "phase4-baselines-20260523T134916Z",
+  "binary_model_task": "binary",
+  "dataset_dir": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase6_generalization_v1",
+  "experiment_count": 16,
+  "experiment_type_distribution": {
+    "backend_rollout_restart": 446,
+    "conntrack_pressure": 362,
+    "normal_steady_state": 827,
+    "path_degradation_netem": 261
+  },
+  "generated_at_utc": "2026-05-24T07:24:26Z",
+  "label_distribution": {
+    "backend_churn": 24,
+    "conntrack_pressure": 143,
+    "normal": 1657,
+    "path_degradation": 72
+  },
+  "load_tier_distribution": {
+    "high": 838,
+    "low": 261,
+    "medium": 797
+  },
+  "model_artifacts_dir": "/home/ubuntu/wjy/ebpf_nodeport/artifacts/phase4_baselines_v1/phase4-baselines-20260523T134916Z",
+  "multiclass_model_run_id": "phase4-baselines-20260523T134916Z",
+  "multiclass_model_task": "multiclass",
+  "normal_row_count": 827,
+  "results_dir": "/home/ubuntu/wjy/ebpf_nodeport/results/phase6_generalization_v1",
+  "row_count": 1896,
+  "topology_distribution": {
+    "local": 800,
+    "remote": 1096
+  }
+}

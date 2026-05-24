@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Phase 6 multiclass ablation results.}
+\label{tab:phase6_ablation_multiclass}
+\begin{tabular}{lrrrr}
+\hline
+variant & feature\_count & test\_macro\_f1 & test\_balanced\_accuracy & delta\_vs\_all \\
+\hline
+all\_features & 27 & 0.4181 & 0.4159 & 0.0000 \\
+minus\_datapath\_stats & 18 & 0.2339 & 0.2500 & -0.1842 \\
+minus\_ct\_gc & 20 & 0.3949 & 0.4611 & -0.0232 \\
+minus\_k8s\_events & 21 & 0.4082 & 0.4294 & -0.0099 \\
+minus\_topology\_backend & 22 & 0.3748 & 0.3619 & -0.0432 \\
+\hline
+\end{tabular}
+\end{table}

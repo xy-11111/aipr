@@ -1,0 +1,95 @@
+{
+  "binary_best_config": {
+    "class_weight": null,
+    "max_depth": null,
+    "min_samples_leaf": 5,
+    "n_estimators": 100
+  },
+  "binary_best_model": "rf_n100_dnone_leaf5_cwnone",
+  "dataset_dir": "/home/ubuntu/wjy/ebpf_nodeport/datasets/phase3_v1",
+  "feature_column_count": 27,
+  "feature_groups": {
+    "ct_gc": [
+      "ct_active_count",
+      "fwd_ct_active_count",
+      "gc_runs_in_window",
+      "gc_deleted_ct",
+      "gc_deleted_fwd_ct",
+      "ct_entry_timeout_seconds",
+      "ct_gc_interval_seconds"
+    ],
+    "datapath_stats": [
+      "delta_tcp_packets",
+      "delta_nodeport_hit",
+      "delta_backend_selected",
+      "delta_rr_update",
+      "delta_snat_install",
+      "delta_request_rewrite",
+      "delta_revnat_hit",
+      "delta_ct_lookup_miss",
+      "delta_response_rewrite"
+    ],
+    "k8s_events": [
+      "service_event_seen",
+      "slice_event_seen",
+      "node_event_seen",
+      "sync_reconcile_count",
+      "sync_upserted_services",
+      "sync_removed_services"
+    ],
+    "topology_backend": [
+      "has_remote_backend",
+      "backend_total",
+      "backend_local",
+      "backend_remote",
+      "backend_total_delta"
+    ]
+  },
+  "generated_at_utc": "2026-05-24T07:06:10Z",
+  "multiclass_best_config": {
+    "class_weight": "balanced",
+    "max_depth": null,
+    "min_samples_leaf": 5,
+    "n_estimators": 100
+  },
+  "multiclass_best_model": "rf_n100_dnone_leaf5_cwbalanced",
+  "phase4_run_manifest": "/home/ubuntu/wjy/ebpf_nodeport/results/phase4_baselines_v1/run_manifest.json",
+  "results_dir": "/home/ubuntu/wjy/ebpf_nodeport/results/phase6_ablation_v1",
+  "test_label_distribution": {
+    "backend_churn": 6,
+    "conntrack_pressure": 42,
+    "control_plane_recovery": 10,
+    "load_surge": 42,
+    "normal": 357,
+    "path_degradation": 42,
+    "service_reconcile": 10
+  },
+  "test_rows": 509,
+  "train_label_distribution": {
+    "backend_churn": 6,
+    "conntrack_pressure": 36,
+    "control_plane_recovery": 7,
+    "load_surge": 36,
+    "normal": 411,
+    "path_degradation": 35,
+    "service_reconcile": 10
+  },
+  "train_rows": 541,
+  "val_label_distribution": {
+    "backend_churn": 7,
+    "conntrack_pressure": 29,
+    "control_plane_recovery": 5,
+    "load_surge": 30,
+    "normal": 289,
+    "path_degradation": 30,
+    "service_reconcile": 10
+  },
+  "val_rows": 400,
+  "variant_order": [
+    "all_features",
+    "minus_datapath_stats",
+    "minus_ct_gc",
+    "minus_k8s_events",
+    "minus_topology_backend"
+  ]
+}

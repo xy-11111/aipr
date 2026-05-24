@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Phase 6 generalization results for multiclass anomaly classification.}
+\label{tab:phase6_generalization_multiclass}
+\begin{tabular}{lrrrrrr}
+\hline
+scenario\_family & topology & load\_tier & row\_count & macro\_f1 & balanced\_accuracy & primary\_label\_f1 \\
+\hline
+backend\_churn & local & high & 5 & 0.0000 & 0.0000 & 0.0000 \\
+backend\_churn & local & medium & 7 & 0.0000 & 0.0000 & 0.0000 \\
+backend\_churn & remote & high & 5 & 0.0833 & 0.2000 & 0.3333 \\
+backend\_churn & remote & medium & 7 & 0.0000 & 0.0000 & 0.0000 \\
+conntrack\_pressure & local & high & 36 & 0.0000 & 0.0000 & 0.0000 \\
+conntrack\_pressure & local & medium & 35 & 0.0395 & 0.0857 & 0.1579 \\
+conntrack\_pressure & remote & high & 37 & 0.0256 & 0.0541 & 0.1026 \\
+conntrack\_pressure & remote & medium & 35 & 0.0395 & 0.0857 & 0.1579 \\
+path\_degradation & remote & high & 37 & 0.0105 & 0.0270 & 0.0526 \\
+path\_degradation & remote & medium & 35 & 0.1905 & 0.4000 & 0.5714 \\
+\hline
+\end{tabular}
+\end{table}

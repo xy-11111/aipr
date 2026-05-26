@@ -74,6 +74,7 @@
   - 已完成中文完整初稿 `paper_draft/phase7_v1/paper_zh.md`，用于内部审阅和论证链打磨。
   - 已完成图表索引 `paper_draft/phase7_v1/asset_map.md`，将 `paper_assets/phase4_v1`、`paper_assets/phase5_v1`、`paper_assets/phase6_v1` 的核心表图映射到论文各节。
   - 已完成 `aipr_phase7_writing_record_round01.md`，明确本阶段不是最终投稿稿，下一阶段进入英文化与 AIPR 模板化。
+  - `Round 02` 已补强相关工作、防泄漏说明、系统架构图、Phase 5 开销口径和 Phase 6 泛化口径，记录见 `aipr_phase7_writing_record_round02.md`。
 
 ## 4. 现有仓库中可直接复用的部分
 
@@ -495,6 +496,7 @@
 - `paper_draft/phase7_v1/paper_zh.md`
 - `paper_draft/phase7_v1/asset_map.md`
 - `aipr_phase7_writing_record_round01.md`
+- `aipr_phase7_writing_record_round02.md`
 
 退出标准：
 
